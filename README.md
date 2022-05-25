@@ -6,7 +6,7 @@ Right now, the program allows you to edit all synth parameters in real time, eve
 
 This is a proof of concept, it works only with CCs and the input is sliders. But it will support NRPNs and proper input methods in the future.
 
-I'd love to know your opinion and ideas, it's time to unlock the features we always wanted within the device. Contact me and pull requests! I'm doing this for fun and I'll listen everybody, even if you don't know programming.
+I'd love to know your opinion and ideas, it's time to unlock the features we always wanted within the device. Contact me and pull requests! I'm doing this for fun and I'll listen to everybody, even if you don't know programming.
 
 To install: 
 install libraries, open code and write your desired wifi and IP, upload it. Connect TRS jack with the tip to +V,Ring to ESP tx, and Sleeve to ground. An optocoupler is recommended for extra device safety.
