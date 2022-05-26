@@ -4,7 +4,7 @@ The code can easily be adapted to other devices from a midi table using RegExp, 
 
 Right now, the program allows you to edit all synth parameters in real time, even if they are normally hidden from the UI.
 
-This is a proof of concept, it works only with CCs and the input is sliders. But it will support NRPNs and proper input methods in the future.
+This is a proof of concept, it works only with CCs atm, but it will support NRPNs in the future.
 
 I'd love to know your opinion and ideas, it's time to unlock the features we always wanted within the device. Contact me and pull requests! I'm doing this for fun and I'll listen to everybody, even if you don't know programming.
 
@@ -13,3 +13,6 @@ install libraries, open code and write your desired wifi and IP, upload it. Conn
 
 To use: 
 Plug jack into MIDI IN, connect to http://192.168.1.4 (or the IP you've chosen). Set Circuit to listen to channel one if it isn't (press shift+sessions while turning on, make sure top left pad is lit). Touch the sliders and they'll immediately affect your synth.
+
+PENDING:
+Add NRPNs, add Switches, select channel, save to memory.
