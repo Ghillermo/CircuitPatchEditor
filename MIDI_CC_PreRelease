@@ -1,0 +1,1154 @@
+/*Real time midi parameter editor example for Novation Circuit.
+   Connect TRS jack: Tip V+, Ring Data(tx), Sleeve GND.
+   Introduce your net credentials and preferred IP below.
+   Then just access that IP using a browser.
+   Based mostly on Websockets library examples and Circuits Programmers Reference Guide.
+*/
+
+#include <WebSocketsServer.h>
+#include <ESP8266WebServer.h>
+#include <ESP8266mDNS.h>
+#include <MIDI.h>
+#include <ESP8266WiFiMulti.h>
+#include <string.h>
+
+#define USE_SERIAL Serial
+
+#define MY_SSID  "albaricoque"
+#define MY_PW  "platanoyfresa"
+
+
+IPAddress local_IP(192, 168, 1, 4); //ESP's IP
+IPAddress gateway(192, 168, 1, 1); //YOUR ROUTER's IP
+IPAddress subnet(255, 255, 255, 0);
+
+const char full_html[] PROGMEM = R"rawliteral(
+<html><head><meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+.select {
+  font-size:24px;
+  }
+.slidecontainer {
+  display: grid;
+  grid-auto-columns:30%;
+}
+
+.slider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 40px;
+  background: #d3d3d3;
+  opacity: 0.7;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+}
+
+.slider:hover {
+  opacity: 1;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 25px;
+  height: 35px;
+  background: #00FFC4;
+  cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+  width: 25px;
+  height: 35px;
+  background: #04AA6D;
+  cursor: pointer;
+}
+</style>
+<script>var connection = new WebSocket('ws://'+location.hostname+':81/', ['arduino']);connection.onopen = function () {  connection.send('Connect ' + new Date()); }; connection.onerror = function (error) {    console.log('WebSocket Error ', error);};connection.onmessage = function (e) {  console.log('Server: ', e.data);};
+function sendcc(cc,val) { hexV = parseInt(val).toString(16); 
+hexC = cc.toString(); 
+if(hexV.length < 2) { hexV = '0' + hexV; }  
+if(hexC.length < 2) { hexC = '0' + hexC; }  
+var command = '#'+hexC+hexV; connection.send(command); var output = document.getElementById("id"+cc); output.innerHTML = val; }; 
+function sendNPRN(cc,val) {hexV = parseInt(val).toString(16); 
+hexC = cc.toString(); 
+if(hexV.length < 2) { hexV = '0' + hexV; }  
+while (hexC.length < 4) { hexC = '0' + hexC; }  
+var command = 'N'+hexC+hexV.toString(16); connection.send(command); var output = document.getElementById("id"+cc); output.innerHTML = val; }; 
+</script></head>
+<body>
+<br>Polyphony Mode: <select id="3"oninput="sendcc(this.id,this.value)" ><option value="0">sine</option><option value="1">triangle</option><option value="2">sawtooth</option><option value="3">saw 9:1 PW</option><option value="4">saw 8:2 PW</option><option value="5">saw 7:3 PW</option><option value="6">saw 6:4 PW</option><option value="7">saw 5:5 PW</option><option value="8">saw 4:6 PW</option><option value="9">saw 3:7 PW</option><option value="10">saw 2:8 PW</option><option value="11">saw 1:9 PW</option><option value="12">pulse width</option><option value="13">square</option><option value="14">sine table</option><option value="15">analogue pulse</option><option value="16">analogue sync</option><option value="17">triangle saw blend</option><option value="18">digital nasty 1</option><option value="19">digital nasty 2</option><option value="20">digital saw square</option><option value="21">digital vocal 1</option><option value="22">digital vocal 2</option><option value="23">digital vocal 3</option><option value="24">digital vocal 4</option><option value="25">digital vocal 5</option><option value="26">digital vocal 6</option><option value="27">random collection 1</option><option value="28">random collection 2</option><option value="29">random collection 3</option></select><br>
+
+<div class=slidercontainer>
+Portamento Rate:<input class="slider" id="5" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id5"></span><br>
+</div>
+
+<div class=slidercontainer>
+Pre-Glide:<input class="slider" id="9" type="range" min="52" max="76" step="1" oninput="sendcc(this.id,this.value);" ><span id="id9"></span><br>
+</div>
+
+<div class=slidercontainer>
+Keyboard Octave:<input class="slider" id="d" type="range" min="58" max="69" step="1" oninput="sendcc(this.id,this.value);" ><span id="idd"></span><br>
+</div>
+
+<div class=slidercontainer>
+osc 1 wave:<input class="slider" id="13" type="range" min="0" max="29" step="1" oninput="sendcc(this.id,this.value);" ><span id="id13"></span><br>
+</div>
+<br>osc 1 wave interpolate: <select id="20"oninput="sendcc(this.id,this.value)" ><option value="0">sine</option><option value="1">triangle</option><option value="2">sawtooth</option><option value="3">saw 9:1 PW</option><option value="4">saw 8:2 PW</option><option value="5">saw 7:3 PW</option><option value="6">saw 6:4 PW</option><option value="7">saw 5:5 PW</option><option value="8">saw 4:6 PW</option><option value="9">saw 3:7 PW</option><option value="10">saw 2:8 PW</option><option value="11">saw 1:9 PW</option><option value="12">pulse width</option><option value="13">square</option><option value="14">sine table</option><option value="15">analogue pulse</option><option value="16">analogue sync</option><option value="17">triangle saw blend</option><option value="18">digital nasty 1</option><option value="19">digital nasty 2</option><option value="20">digital saw square</option><option value="21">digital vocal 1</option><option value="22">digital vocal 2</option><option value="23">digital vocal 3</option><option value="24">digital vocal 4</option><option value="25">digital vocal 5</option><option value="26">digital vocal 6</option><option value="27">random collection 1</option><option value="28">random collection 2</option><option value="29">random collection 3</option></select><br>
+
+<div class=slidercontainer>
+osc 1 pulse width index:<input class="slider" id="15" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id15"></span><br>
+</div>
+
+<div class=slidercontainer>
+osc 1 virtual sync depth:<input class="slider" id="16" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id16"></span><br>
+</div>
+
+<div class=slidercontainer>
+osc 1 density:<input class="slider" id="18" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id18"></span><br>
+</div>
+
+<div class=slidercontainer>
+osc 1 density detune:<input class="slider" id="19" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id19"></span><br>
+</div>
+
+<div class=slidercontainer>
+osc 1 semitones:<input class="slider" id="1a" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id1a"></span><br>
+</div>
+
+<div class=slidercontainer>
+osc 1 cents:<input class="slider" id="1b" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id1b"></span><br>
+</div>
+
+<div class=slidercontainer>
+osc 1 pitchbend:<input class="slider" id="1c" type="range" min="52" max="76" step="1" oninput="sendcc(this.id,this.value);" ><span id="id1c"></span><br>
+</div>
+<br>osc 2 wave: <select id="29"oninput="sendcc(this.id,this.value)" ><option value="0">sine</option><option value="1">triangle</option><option value="2">sawtooth</option><option value="3">saw 9:1 PW</option><option value="4">saw 8:2 PW</option><option value="5">saw 7:3 PW</option><option value="6">saw 6:4 PW</option><option value="7">saw 5:5 PW</option><option value="8">saw 4:6 PW</option><option value="9">saw 3:7 PW</option><option value="10">saw 2:8 PW</option><option value="11">saw 1:9 PW</option><option value="12">pulse width</option><option value="13">square</option><option value="14">sine table</option><option value="15">analogue pulse</option><option value="16">analogue sync</option><option value="17">triangle saw blend</option><option value="18">digital nasty 1</option><option value="19">digital nasty 2</option><option value="20">digital saw square</option><option value="21">digital vocal 1</option><option value="22">digital vocal 2</option><option value="23">digital vocal 3</option><option value="24">digital vocal 4</option><option value="25">digital vocal 5</option><option value="26">digital vocal 6</option><option value="27">random collection 1</option><option value="28">random collection 2</option><option value="29">random collection 3</option></select><br>
+
+<div class=slidercontainer>
+osc 2 wave interpolate:<input class="slider" id="1e" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id1e"></span><br>
+</div>
+
+<div class=slidercontainer>
+osc 2 pulse width index:<input class="slider" id="1f" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id1f"></span><br>
+</div>
+
+<div class=slidercontainer>
+osc 2 virtual sync depth:<input class="slider" id="21" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id21"></span><br>
+</div>
+
+<div class=slidercontainer>
+osc 2 density:<input class="slider" id="23" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id23"></span><br>
+</div>
+
+<div class=slidercontainer>
+osc 2 density detune:<input class="slider" id="24" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id24"></span><br>
+</div>
+
+<div class=slidercontainer>
+osc 2 semitones:<input class="slider" id="25" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id25"></span><br>
+</div>
+
+<div class=slidercontainer>
+osc 2 cents:<input class="slider" id="27" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id27"></span><br>
+</div>
+
+<div class=slidercontainer>
+osc 2 pitchbend:<input class="slider" id="28" type="range" min="52" max="76" step="1" oninput="sendcc(this.id,this.value);" ><span id="id28"></span><br>
+</div>
+
+<div class=slidercontainer>
+osc 1 level:<input class="slider" id="33" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id33"></span><br>
+</div>
+
+<div class=slidercontainer>
+osc 2 level:<input class="slider" id="34" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id34"></span><br>
+</div>
+
+<div class=slidercontainer>
+ring mod level:<input class="slider" id="36" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id36"></span><br>
+</div>
+
+<div class=slidercontainer>
+noise level:<input class="slider" id="38" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id38"></span><br>
+</div>
+
+<div class=slidercontainer>
+pre FX level:<input class="slider" id="3a" type="range" min="52" max="82" step="1" oninput="sendcc(this.id,this.value);" ><span id="id3a"></span><br>
+</div>
+
+<div class=slidercontainer>
+post FX level:<input class="slider" id="3b" type="range" min="52" max="82" step="1" oninput="sendcc(this.id,this.value);" ><span id="id3b"></span><br>
+
+<br>routing: <select id="60"oninput="sendcc(this.id,this.value)" ><option value="0">sine</option><option value="1">triangle</option><option value="2">sawtooth</option><option value="3">saw 9:1 PW</option><option value="4">saw 8:2 PW</option><option value="5">saw 7:3 PW</option><option value="6">saw 6:4 PW</option><option value="7">saw 5:5 PW</option><option value="8">saw 4:6 PW</option><option value="9">saw 3:7 PW</option><option value="10">saw 2:8 PW</option><option value="11">saw 1:9 PW</option><option value="12">pulse width</option><option value="13">square</option><option value="14">sine table</option><option value="15">analogue pulse</option><option value="16">analogue sync</option><option value="17">triangle saw blend</option><option value="18">digital nasty 1</option><option value="19">digital nasty 2</option><option value="20">digital saw square</option><option value="21">digital vocal 1</option><option value="22">digital vocal 2</option><option value="23">digital vocal 3</option><option value="24">digital vocal 4</option><option value="25">digital vocal 5</option><option value="26">digital vocal 6</option><option value="27">random collection 1</option><option value="28">random collection 2</option><option value="29">random collection 3</option></select><br>
+</div>
+<div class=slidercontainer>
+drive:<input class="slider" id="3f" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id3f"></span><br>
+
+<br>drive type: <select id="65"oninput="sendcc(this.id,this.value)" ><option value="0">%nombre</option><option value="1">%nombre</option><option value="2">%nombre</option><option value="3">%nombre</option><option value="4">%nombre</option><option value="5">%nombre</option><option value="6">%nombre</option><option value="7">%nombre</option><option value="8">%nombre</option><option value="9">%nombre</option><option value="10">%nombre</option><option value="11">%nombre</option><option value="12">%nombre</option><option value="13">%nombre</option><option value="14">%nombre</option><option value="15">%nombre</option><option value="16">%nombre</option><option value="17">%nombre</option><option value="18">%nombre</option><option value="19">%nombre</option><option value="20">%nombre</option><option value="21">%nombre</option><option value="22">%nombre</option><option value="23">%nombre</option><option value="24">%nombre</option><option value="25">%nombre</option><option value="26">%nombre</option><option value="27">%nombre</option><option value="28">%nombre</option><option value="29">%nombre</option></select><br>
+<br>type: <select id="68"oninput="sendcc(this.id,this.value)" ><option value="0">%nombre</option><option value="1">%nombre</option><option value="2">%nombre</option><option value="3">%nombre</option><option value="4">%nombre</option><option value="5">%nombre</option><option value="6">%nombre</option><option value="7">%nombre</option><option value="8">%nombre</option><option value="9">%nombre</option><option value="10">%nombre</option><option value="11">%nombre</option><option value="12">%nombre</option><option value="13">%nombre</option><option value="14">%nombre</option><option value="15">%nombre</option><option value="16">%nombre</option><option value="17">%nombre</option><option value="18">%nombre</option><option value="19">%nombre</option><option value="20">%nombre</option><option value="21">%nombre</option><option value="22">%nombre</option><option value="23">%nombre</option><option value="24">%nombre</option><option value="25">%nombre</option><option value="26">%nombre</option><option value="27">%nombre</option><option value="28">%nombre</option><option value="29">%nombre</option></select><br>
+</div>
+<div class=slidercontainer>
+frequency:<input class="slider" id="4a" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id4a"></span><br>
+</div>
+
+<div class=slidercontainer>
+tracking:<input class="slider" id="45" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id45"></span><br>
+</div>
+
+<div class=slidercontainer>
+resonance:<input class="slider" id="47" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id47"></span><br>
+</div>
+
+<div class=slidercontainer>
+Q normalize:<input class="slider" id="4e" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id4e"></span><br>
+</div>
+
+<div class=slidercontainer>
+env 2 to frequency:<input class="slider" id="4f" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id4f"></span><br>
+</div>
+
+<div class=slidercontainer>
+env 1 velocity:<input class="slider" id="6c" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id6c"></span><br>
+</div>
+
+<div class=slidercontainer>
+env 1 attack:<input class="slider" id="49" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id49"></span><br>
+</div>
+
+<div class=slidercontainer>
+env 1 decay:<input class="slider" id="4b" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id4b"></span><br>
+</div>
+
+<div class=slidercontainer>
+env 1 sustain:<input class="slider" id="46" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id46"></span><br>
+</div>
+
+<div class=slidercontainer>
+env 1 release:<input class="slider" id="48" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id48"></span><br>
+</div>
+
+<div class=slidercontainer>
+distortion level:<input class="slider" id="5b" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id5b"></span><br>
+</div>
+
+<div class=slidercontainer>
+chorus level:<input class="slider" id="5d" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id5d"></span><br>
+</div>
+
+<div class=slidercontainer>
+macro knob 1 position:<input class="slider" id="50" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id50"></span><br>
+</div>
+
+<div class=slidercontainer>
+macro knob 2 position:<input class="slider" id="51" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id51"></span><br>
+</div>
+
+<div class=slidercontainer>
+macro knob 3 position:<input class="slider" id="52" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id52"></span><br>
+</div>
+
+<div class=slidercontainer>
+macro knob 4 position:<input class="slider" id="53" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id53"></span><br>
+</div>
+
+<div class=slidercontainer>
+macro knob 5 position:<input class="slider" id="54" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id54"></span><br>
+</div>
+
+<div class=slidercontainer>
+macro knob 6 position:<input class="slider" id="55" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id55"></span><br>
+</div>
+
+<div class=slidercontainer>
+macro knob 7 position:<input class="slider" id="56" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id56"></span><br>
+</div>
+
+<div class=slidercontainer>
+macro knob 8 position:<input class="slider" id="57" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id57"></span><br>
+</div>
+<br><h2>NRPN:</h2><br>
+
+<div class=slidercontainer>
+env 2 velocity:<input class="slider" id="0000" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0000"></span><br>
+</div>
+<div class=slidercontainer>
+env 2 attack:<input class="slider" id="0001" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0001"></span><br>
+</div>
+<div class=slidercontainer>
+env 2 decay:<input class="slider" id="0002" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0002"></span><br>
+</div>
+<div class=slidercontainer>
+env 2 sustain:<input class="slider" id="0003" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0003"></span><br>
+</div>
+<div class=slidercontainer>
+env 2 release:<input class="slider" id="0004" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0004"></span><br>
+</div>
+<div class=slidercontainer>
+env 3 delay:<input class="slider" id="000e" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id000e"></span><br>
+</div>
+<div class=slidercontainer>
+env 3 attack:<input class="slider" id="000f" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id000f"></span><br>
+</div>
+<div class=slidercontainer>
+env 3 decay:<input class="slider" id="0010" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0010"></span><br>
+</div>
+<div class=slidercontainer>
+env 3 sustain:<input class="slider" id="0011" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0011"></span><br>
+</div>
+<div class=slidercontainer>
+env 3 release:<input class="slider" id="0012" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0012"></span><br>
+</div>
+<div class=slidercontainer>
+lfo 1 waveform:<input class="slider" id="0046" type="range" min="0" max="37" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0046"></span><br>
+</div>
+<div class=slidercontainer>
+lfo 1 phase offset:<input class="slider" id="0047" type="range" min="0" max="119" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0047"></span><br>
+</div>
+<div class=slidercontainer>
+lfo 1 slew rate:<input class="slider" id="0048" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0048"></span><br>
+</div>
+<div class=slidercontainer>
+lfo 1 delay:<input class="slider" id="004a" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id004a"></span><br>
+</div>
+<div class=slidercontainer>
+lfo 1 delay sync:<input class="slider" id="004b" type="range" min="0" max="35" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id004b"></span><br>
+</div>
+<div class=slidercontainer>
+lfo 1 rate:<input class="slider" id="004c" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id004c"></span><br>
+</div>
+<div class=slidercontainer>
+lfo 1 rate sync:<input class="slider" id="004d" type="range" min="0" max="35" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id004d"></span><br>
+</div>
+<div class=slidercontainer>
+lfo 1 one shot:<input class="slider" id="007a" type="range" min="12" max="13" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id007a"></span><br>
+</div>
+<div class=slidercontainer>
+lfo 1 key sync:<input class="slider" id="007a" type="range" min="14" max="15" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id007a"></span><br>
+</div>
+<div class=slidercontainer>
+lfo 1 common sync:<input class="slider" id="007a" type="range" min="16" max="17" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id007a"></span><br>
+</div>
+<div class=slidercontainer>
+lfo 1 delay trigger:<input class="slider" id="007a" type="range" min="18" max="19" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id007a"></span><br>
+</div>
+<div class=slidercontainer>
+lfo 1 fade mode:<input class="slider" id="007b" type="range" min="0" max="3" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id007b"></span><br>
+</div>
+<div class=slidercontainer>
+lfo 2 waveform:<input class="slider" id="004f" type="range" min="0" max="37" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id004f"></span><br>
+</div>
+<div class=slidercontainer>
+lfo 2 phase offset:<input class="slider" id="0050" type="range" min="0" max="119" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0050"></span><br>
+</div>
+<div class=slidercontainer>
+lfo 2 slew rate:<input class="slider" id="0051" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0051"></span><br>
+</div>
+<div class=slidercontainer>
+lfo 2 delay:<input class="slider" id="0053" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0053"></span><br>
+</div>
+<div class=slidercontainer>
+lfo 2 delay sync:<input class="slider" id="0054" type="range" min="0" max="35" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0054"></span><br>
+</div>
+<div class=slidercontainer>
+lfo 2 rate:<input class="slider" id="0055" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0055"></span><br>
+</div>
+<div class=slidercontainer>
+lfo 2 rate sync:<input class="slider" id="0056" type="range" min="0" max="35" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0056"></span><br>
+</div>
+<div class=slidercontainer>
+lfo 2 one shot:<input class="slider" id="007a" type="range" min="22" max="23" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id007a"></span><br>
+</div>
+<div class=slidercontainer>
+lfo 2 key sync:<input class="slider" id="007a" type="range" min="24" max="25" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id007a"></span><br>
+</div>
+<div class=slidercontainer>
+lfo 2 common sync:<input class="slider" id="007a" type="range" min="26" max="27" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id007a"></span><br>
+</div>
+<div class=slidercontainer>
+lfo 2 delay trigger:<input class="slider" id="007a" type="range" min="28" max="29" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id007a"></span><br>
+</div>
+<div class=slidercontainer>
+lfo 2 fade mode:<input class="slider" id="007b" type="range" min="4" max="7" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id007b"></span><br>
+</div>
+<div class=slidercontainer>
+EQ bass frequency:<input class="slider" id="0068" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0068"></span><br>
+</div>
+<div class=slidercontainer>
+EQ bass level:<input class="slider" id="0069" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0069"></span><br>
+</div>
+<div class=slidercontainer>
+EQ mid frequency:<input class="slider" id="006a" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id006a"></span><br>
+</div>
+<div class=slidercontainer>
+EQ mid level:<input class="slider" id="006b" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id006b"></span><br>
+</div>
+<div class=slidercontainer>
+EQ treble frequency:<input class="slider" id="006c" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id006c"></span><br>
+</div>
+<div class=slidercontainer>
+EQ treble level:<input class="slider" id="006d" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id006d"></span><br>
+</div>
+<div class=slidercontainer>
+distortion type:<input class="slider" id="0100" type="range" min="0" max="6" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0100"></span><br>
+</div>
+<div class=slidercontainer>
+distortion compensation:<input class="slider" id="0101" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0101"></span><br>
+</div>
+<div class=slidercontainer>
+chorus type:<input class="slider" id="0118" type="range" min="0" max="1" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0118"></span><br>
+</div>
+<div class=slidercontainer>
+chorus rate:<input class="slider" id="0119" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0119"></span><br>
+</div>
+<div class=slidercontainer>
+chorus rate sync:<input class="slider" id="011a" type="range" min="0" max="35" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id011a"></span><br>
+</div>
+<div class=slidercontainer>
+chorus feedback:<input class="slider" id="011b" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id011b"></span><br>
+</div>
+<div class=slidercontainer>
+chorus mod depth:<input class="slider" id="011c" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id011c"></span><br>
+</div>
+<div class=slidercontainer>
+chorus delay:<input class="slider" id="011d" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id011d"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 1 source 1:<input class="slider" id="0153" type="range" min="0" max="12" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0153"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 1 source 2:<input class="slider" id="0154" type="range" min="0" max="12" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0154"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 1 depth:<input class="slider" id="0156" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0156"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 1 destination:<input class="slider" id="0157" type="range" min="0" max="17" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0157"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 2 source 1:<input class="slider" id="0158" type="range" min="0" max="12" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0158"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 2 source 2:<input class="slider" id="0159" type="range" min="0" max="12" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0159"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 2 depth:<input class="slider" id="015b" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id015b"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 2 destination:<input class="slider" id="015c" type="range" min="0" max="17" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id015c"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 3 source 1:<input class="slider" id="015d" type="range" min="0" max="12" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id015d"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 3 source 2:<input class="slider" id="015e" type="range" min="0" max="12" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id015e"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 3 depth:<input class="slider" id="0160" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0160"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 3 destination:<input class="slider" id="0161" type="range" min="0" max="17" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0161"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 4 source 1:<input class="slider" id="0162" type="range" min="0" max="12" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0162"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 4 source 2:<input class="slider" id="0163" type="range" min="0" max="12" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0163"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 4 depth:<input class="slider" id="0165" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0165"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 4 destination:<input class="slider" id="0166" type="range" min="0" max="17" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0166"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 5 source 1:<input class="slider" id="0167" type="range" min="0" max="12" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0167"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 5 source 2:<input class="slider" id="0168" type="range" min="0" max="12" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0168"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 5 depth:<input class="slider" id="016a" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id016a"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 5 destination:<input class="slider" id="016b" type="range" min="0" max="17" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id016b"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 6 source 1:<input class="slider" id="016c" type="range" min="0" max="12" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id016c"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 6 source 2:<input class="slider" id="016d" type="range" min="0" max="12" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id016d"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 6 depth:<input class="slider" id="016f" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id016f"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 6 destination:<input class="slider" id="0170" type="range" min="0" max="17" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0170"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 7 source 1:<input class="slider" id="0171" type="range" min="0" max="12" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0171"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 7 source 2:<input class="slider" id="0172" type="range" min="0" max="12" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0172"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 7 depth:<input class="slider" id="0174" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0174"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 7 destination:<input class="slider" id="0175" type="range" min="0" max="17" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0175"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 8 source 1:<input class="slider" id="0176" type="range" min="0" max="12" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0176"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 8 source 2:<input class="slider" id="0177" type="range" min="0" max="12" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0177"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 8 depth:<input class="slider" id="0179" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0179"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 8 destination:<input class="slider" id="017a" type="range" min="0" max="17" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id017a"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 9 source 1:<input class="slider" id="017b" type="range" min="0" max="12" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id017b"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 9 source 2:<input class="slider" id="017c" type="range" min="0" max="12" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id017c"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 9 depth:<input class="slider" id="017e" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id017e"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 9 destination:<input class="slider" id="017f" type="range" min="0" max="17" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id017f"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 10 source 1:<input class="slider" id="0200" type="range" min="0" max="12" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0200"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 10 source 2:<input class="slider" id="0201" type="range" min="0" max="12" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0201"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 10 depth:<input class="slider" id="0203" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0203"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 10 destination:<input class="slider" id="0204" type="range" min="0" max="17" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0204"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 11 source 1:<input class="slider" id="0205" type="range" min="0" max="12" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0205"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 11 source 2:<input class="slider" id="0206" type="range" min="0" max="12" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0206"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 11 depth:<input class="slider" id="0208" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0208"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 11 destination:<input class="slider" id="0209" type="range" min="0" max="17" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0209"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 12 source 1:<input class="slider" id="020a" type="range" min="0" max="12" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id020a"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 12 source 2:<input class="slider" id="020b" type="range" min="0" max="12" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id020b"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 12 depth:<input class="slider" id="020d" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id020d"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 12 destination:<input class="slider" id="020e" type="range" min="0" max="17" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id020e"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 13 source 1:<input class="slider" id="020f" type="range" min="0" max="12" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id020f"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 13 source 2:<input class="slider" id="0210" type="range" min="0" max="12" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0210"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 13 depth:<input class="slider" id="0212" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0212"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 13 destination:<input class="slider" id="0213" type="range" min="0" max="17" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0213"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 14 source 1:<input class="slider" id="0214" type="range" min="0" max="12" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0214"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 14 source 2:<input class="slider" id="0215" type="range" min="0" max="12" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0215"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 14 depth:<input class="slider" id="0217" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0217"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 14 destination:<input class="slider" id="0218" type="range" min="0" max="17" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0218"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 15 source 1:<input class="slider" id="0219" type="range" min="0" max="12" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0219"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 15 source 2:<input class="slider" id="021b" type="range" min="0" max="12" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id021b"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 15 depth:<input class="slider" id="021c" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id021c"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 15 destination:<input class="slider" id="021d" type="range" min="0" max="17" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id021d"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 16 source 1:<input class="slider" id="021e" type="range" min="0" max="12" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id021e"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 16 source 2:<input class="slider" id="0220" type="range" min="0" max="12" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0220"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 16 depth:<input class="slider" id="0221" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0221"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 16 destination:<input class="slider" id="0222" type="range" min="0" max="17" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0222"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 17 source 1:<input class="slider" id="0223" type="range" min="0" max="12" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0223"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 17 source 2:<input class="slider" id="0225" type="range" min="0" max="12" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0225"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 17 depth:<input class="slider" id="0226" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0226"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 17 destination:<input class="slider" id="0227" type="range" min="0" max="17" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0227"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 18 source 1:<input class="slider" id="0228" type="range" min="0" max="12" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0228"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 18 source 2:<input class="slider" id="022a" type="range" min="0" max="12" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id022a"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 18 depth:<input class="slider" id="022b" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id022b"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 18 destination:<input class="slider" id="022c" type="range" min="0" max="17" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id022c"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 19 source 1:<input class="slider" id="022d" type="range" min="0" max="12" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id022d"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 19 source 2:<input class="slider" id="022f" type="range" min="0" max="12" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id022f"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 19 depth:<input class="slider" id="0230" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0230"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 19 destination:<input class="slider" id="0231" type="range" min="0" max="17" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0231"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 20 source 1:<input class="slider" id="0232" type="range" min="0" max="12" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0232"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 20 source 2:<input class="slider" id="0234" type="range" min="0" max="12" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0234"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 20 depth:<input class="slider" id="0235" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0235"></span><br>
+</div>
+<div class=slidercontainer>
+mod matrix 20 destination:<input class="slider" id="0236" type="range" min="0" max="17" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0236"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 1 destination A:<input class="slider" id="0300" type="range" min="0" max="70" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0300"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 1 start position A:<input class="slider" id="0301" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0301"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 1 end position A:<input class="slider" id="0302" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0302"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 1 depth A:<input class="slider" id="0303" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0303"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 1 destination B:<input class="slider" id="0304" type="range" min="0" max="70" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0304"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 1 start position B:<input class="slider" id="0305" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0305"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 1 end position B:<input class="slider" id="0306" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0306"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 1 depth B:<input class="slider" id="0307" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0307"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 1 destination C:<input class="slider" id="0308" type="range" min="0" max="70" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0308"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 1 start position C:<input class="slider" id="0309" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0309"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 1 end position C:<input class="slider" id="030a" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id030a"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 1 depth C:<input class="slider" id="030b" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id030b"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 1 destination D:<input class="slider" id="030c" type="range" min="0" max="70" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id030c"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 1 start position D:<input class="slider" id="030d" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id030d"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 1 end position D:<input class="slider" id="030e" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id030e"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 1 depth D:<input class="slider" id="030f" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id030f"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 2 destination A:<input class="slider" id="0310" type="range" min="0" max="70" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0310"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 2 start position A:<input class="slider" id="0311" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0311"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 2 end position A:<input class="slider" id="0312" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0312"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 2 depth A:<input class="slider" id="0313" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0313"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 2 destination B:<input class="slider" id="0314" type="range" min="0" max="70" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0314"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 2 start position B:<input class="slider" id="0315" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0315"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 2 end position B:<input class="slider" id="0316" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0316"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 2 depth B:<input class="slider" id="0317" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0317"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 2 destination C:<input class="slider" id="0318" type="range" min="0" max="70" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0318"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 2 start position C:<input class="slider" id="0319" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0319"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 2 end position C:<input class="slider" id="031a" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id031a"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 2 depth C:<input class="slider" id="031b" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id031b"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 2 destination D:<input class="slider" id="031c" type="range" min="0" max="70" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id031c"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 2 start position D:<input class="slider" id="031d" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id031d"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 2 end position D:<input class="slider" id="031e" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id031e"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 2 depth D:<input class="slider" id="031f" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id031f"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 3 destination A:<input class="slider" id="0320" type="range" min="0" max="70" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0320"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 3 start position A:<input class="slider" id="0321" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0321"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 3 end position A:<input class="slider" id="0322" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0322"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 3 depth A:<input class="slider" id="0323" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0323"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 3 destination B:<input class="slider" id="0324" type="range" min="0" max="70" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0324"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 3 start position B:<input class="slider" id="0325" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0325"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 3 end position B:<input class="slider" id="0326" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0326"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 3 depth B:<input class="slider" id="0327" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0327"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 3 destination C:<input class="slider" id="0328" type="range" min="0" max="70" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0328"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 3 start position C:<input class="slider" id="0329" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0329"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 3 end position C:<input class="slider" id="032a" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id032a"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 3 depth C:<input class="slider" id="032b" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id032b"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 3 destination D:<input class="slider" id="032c" type="range" min="0" max="70" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id032c"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 3 start position D:<input class="slider" id="032d" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id032d"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 3 end position D:<input class="slider" id="032e" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id032e"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 3 depth D:<input class="slider" id="032f" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id032f"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 4 destination A:<input class="slider" id="0330" type="range" min="0" max="70" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0330"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 4 start position A:<input class="slider" id="0331" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0331"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 4 end position A:<input class="slider" id="0332" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0332"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 4 depth A:<input class="slider" id="0333" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0333"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 4 destination B:<input class="slider" id="0334" type="range" min="0" max="70" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0334"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 4 start position B:<input class="slider" id="0335" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0335"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 4 end position B:<input class="slider" id="0336" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0336"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 4 depth B:<input class="slider" id="0337" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0337"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 4 destination C:<input class="slider" id="0338" type="range" min="0" max="70" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0338"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 4 start position C:<input class="slider" id="0339" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0339"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 4 end position C:<input class="slider" id="033a" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id033a"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 4 depth C:<input class="slider" id="033b" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id033b"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 4 destination D:<input class="slider" id="033c" type="range" min="0" max="70" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id033c"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 4 start position D:<input class="slider" id="033d" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id033d"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 4 end position D:<input class="slider" id="033e" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id033e"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 4 depth D:<input class="slider" id="033f" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id033f"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 5 destination A:<input class="slider" id="0340" type="range" min="0" max="70" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0340"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 5 start position A:<input class="slider" id="0341" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0341"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 5 end position A:<input class="slider" id="0342" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0342"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 5 depth A:<input class="slider" id="0343" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0343"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 5 destination B:<input class="slider" id="0344" type="range" min="0" max="70" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0344"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 5 start position B:<input class="slider" id="0345" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0345"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 5 end position B:<input class="slider" id="0346" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0346"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 5 depth B:<input class="slider" id="0347" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0347"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 5 destination C:<input class="slider" id="0348" type="range" min="0" max="70" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0348"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 5 start position C:<input class="slider" id="0349" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0349"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 5 end position C:<input class="slider" id="034a" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id034a"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 5 depth C:<input class="slider" id="034b" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id034b"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 5 destination D:<input class="slider" id="034c" type="range" min="0" max="70" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id034c"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 5 start position D:<input class="slider" id="034d" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id034d"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 5 end position D:<input class="slider" id="034e" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id034e"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 5 depth D:<input class="slider" id="034f" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id034f"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 6 destination A:<input class="slider" id="0350" type="range" min="0" max="70" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0350"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 6 start position A:<input class="slider" id="0351" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0351"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 6 end position A:<input class="slider" id="0352" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0352"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 6 depth A:<input class="slider" id="0353" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0353"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 6 destination B:<input class="slider" id="0354" type="range" min="0" max="70" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0354"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 6 start position B:<input class="slider" id="0355" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0355"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 6 end position B:<input class="slider" id="0356" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0356"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 6 depth B:<input class="slider" id="0357" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0357"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 6 destination C:<input class="slider" id="0358" type="range" min="0" max="70" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0358"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 6 start position C:<input class="slider" id="0359" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0359"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 6 end position C:<input class="slider" id="035a" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id035a"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 6 depth C:<input class="slider" id="035b" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id035b"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 6 destination D:<input class="slider" id="035c" type="range" min="0" max="70" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id035c"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 6 start position D:<input class="slider" id="035d" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id035d"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 6 end position D:<input class="slider" id="035e" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id035e"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 6 depth D:<input class="slider" id="035f" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id035f"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 7 destination A:<input class="slider" id="0360" type="range" min="0" max="70" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0360"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 7 start position A:<input class="slider" id="0361" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0361"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 7 end position A:<input class="slider" id="0362" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0362"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 7 depth A:<input class="slider" id="0363" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0363"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 7 destination B:<input class="slider" id="0364" type="range" min="0" max="70" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0364"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 7 start position B:<input class="slider" id="0365" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0365"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 7 end position B:<input class="slider" id="0366" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0366"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 7 depth B:<input class="slider" id="0367" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0367"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 7 destination C:<input class="slider" id="0368" type="range" min="0" max="70" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0368"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 7 start position C:<input class="slider" id="0369" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0369"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 7 end position C:<input class="slider" id="036a" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id036a"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 7 depth C:<input class="slider" id="036b" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id036b"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 7 destination D:<input class="slider" id="036c" type="range" min="0" max="70" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id036c"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 7 start position D:<input class="slider" id="036d" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id036d"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 7 end position D:<input class="slider" id="036e" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id036e"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 7 depth D:<input class="slider" id="036f" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id036f"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 8 destination A:<input class="slider" id="0370" type="range" min="0" max="70" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0370"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 8 start position A:<input class="slider" id="0371" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0371"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 8 end position A:<input class="slider" id="0372" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0372"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 8 depth A:<input class="slider" id="0373" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0373"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 8 destination B:<input class="slider" id="0374" type="range" min="0" max="70" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0374"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 8 start position B:<input class="slider" id="0375" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0375"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 8 end position B:<input class="slider" id="0376" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0376"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 8 depth B:<input class="slider" id="0377" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0377"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 8 destination C:<input class="slider" id="0378" type="range" min="0" max="70" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0378"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 8 start position C:<input class="slider" id="0379" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0379"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 8 end position C:<input class="slider" id="037a" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id037a"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 8 depth C:<input class="slider" id="037b" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id037b"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 8 destination D:<input class="slider" id="037c" type="range" min="0" max="70" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id037c"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 8 start position D:<input class="slider" id="037d" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id037d"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 8 end position D:<input class="slider" id="037e" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id037e"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 8 depth D:<input class="slider" id="037f" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id037f"></span><br>
+</div>
+</body></html>
+)rawliteral";
+
+
+
+ESP8266WiFiMulti WiFiMulti;
+WebSocketsServer webSocket = WebSocketsServer(81);
+ESP8266WebServer server(80);
+
+MIDI_CREATE_DEFAULT_INSTANCE();
+
+void sendNRPN(byte MSB, byte LSB, byte valor, byte canal) {
+MIDI.sendControlChange( 99, MSB, canal);
+delay(2);
+MIDI.sendControlChange( 98, LSB, canal);
+delay(2);
+MIDI.sendControlChange( 6 , valor, canal);
+delay(2);
+}
+void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length) {
+  //Handle websocket
+  switch (type) {
+    case WStype_DISCONNECTED:
+      //USE_SERIAL.printf("[%u] Disconnected!\n", num);
+      break;
+    case WStype_CONNECTED: {
+        IPAddress ip = webSocket.remoteIP(num);
+        //USE_SERIAL.printf("[%u] Connected from %d.%d.%d.%d url: %s\n", num, ip[0], ip[1], ip[2], ip[3], payload);
+
+        // send message to client
+        webSocket.sendTXT(num, "Connected");
+      }
+      break;
+    case WStype_TEXT:
+      //USE_SERIAL.printf("[%u] get Text: %s\n", num, payload);
+      byte   canal = 1; //Channel, may be selectable in the future.
+
+      if (payload[0] == '#') { //Read CC payload (it's always #CCVV, where CC is 2 hex digit CC and VV is 2 hex dig value).
+
+        uint32_t msg = (uint32_t) strtol((const char *) &payload[1], NULL, 16);
+        byte M3 = (msg >> 16) & 0xFF;
+        byte CC = (msg >> 8) & 0xFF;
+        byte val = (msg >> 0) & 0xFF;
+        //USE_SERIAL.print("CC: "); //USE_SERIAL.print(CC); 
+        //USE_SERIAL.print(" - val: "); //USE_SERIAL.print(val);
+        //USE_SERIAL.print(" - canal: "); //USE_SERIAL.print(canal); 
+        //USE_SERIAL.print(" M3 : ");//USE_SERIAL.println(M3);
+        MIDI.sendControlChange(CC, val, canal);
+        delay(2);
+      } else if (payload[0] == 'N') { //Read NPRN payload. It's always NMMLLVV, where MM msb, LL lsb VV value 
+        uint32_t msg = (uint32_t) strtol((const char *) &payload[1], NULL, 16);
+        byte MSB = (msg >> 16) & 0xFF;
+        byte LSB = (msg >> 8) & 0xFF;
+        byte val = (msg >> 0) & 0xFF;
+        sendNRPN(MSB,LSB,val,canal);
+        
+        //USE_SERIAL.print("MSB: "); //USE_SERIAL.print(MSB); 
+        //USE_SERIAL.print(" - LSB: "); //USE_SERIAL.print(LSB);
+        //USE_SERIAL.print(" - val: "); //USE_SERIAL.print(val);
+        //USE_SERIAL.print(" - canal: "); //USE_SERIAL.println(canal); 
+        delay(2);
+      }
+      break;
+  }
+}
+void handleRoot() {
+  server.send(200, "text/html",full_html);
+}
+
+void setup() {
+  /*
+  //USE_SERIAL.begin(9600);
+  //USE_SERIAL.flush();
+  
+  for (uint8_t t = 4; t > 0; t--) {
+    //USE_SERIAL.printf("[SETUP] BOOT WAIT %d...\n", t);
+   //USE_SERIAL.flush();
+    delay(1000);
+  }*/
+  
+  MIDI.begin();
+  if (!WiFi.config(local_IP, gateway, subnet)) {
+    //USE_SERIAL.println("STA Failed to configure");
+  }
+  WiFiMulti.addAP(MY_SSID, MY_PW);
+  while (WiFiMulti.run() != WL_CONNECTED) { //Wait and retry reconnect
+    delay(100);
+  }
+  if (MDNS.begin("esp8266")) {  
+    //USE_SERIAL.println("MDNS responder started");
+  }
+  // handle index
+  server.on("/", HTTP_GET, handleRoot);
+  webSocket.begin();
+  webSocket.onEvent(webSocketEvent);
+  server.begin();
+  // Add service to MDNS
+  MDNS.addService("http", "tcp", 80);
+  MDNS.addService("ws", "tcp", 81);
+}
+
+unsigned long last_10sec = 0;
+unsigned int counter = 0;
+
+void loop() {
+  unsigned long t = millis();
+  webSocket.loop();
+  server.handleClient();
+  if ((t - last_10sec) > 10 * 1000) {
+    counter++;
+    bool ping = (counter % 2);
+    int i = webSocket.connectedClients(ping);
+    //USE_SERIAL.printf("%d Connected websocket clients ping: %d\n", i, ping);
+    last_10sec = millis();
+  }
+}
