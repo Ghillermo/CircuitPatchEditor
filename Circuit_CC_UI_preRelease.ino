@@ -1553,323 +1553,6 @@ macro knob 1 destination A:<select id="0300" >
 <option value="16">amp envelope decay</option>
 <option value="17">mod envelope decay</option></select></div>
 
-<div class=slidercontainer>
-macro knob 1 start position A:<input class="slider" id="0301" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0301"></span><br>
-</div>
-<div class=slidercontainer>
-macro knob 1 end position A:<input class="slider" id="0302" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0302"></span><br>
-</div>
-<div class=slidercontainer>
-macro knob 1 depth A:<input class="slider" id="0303" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0303"></span><br>
-</div>
-
-<div class=slidercontainer>
-macro knob 1 start position B:<input class="slider" id="0305" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0305"></span><br>
-</div>
-<div class=slidercontainer>
-macro knob 1 end position B:<input class="slider" id="0306" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0306"></span><br>
-</div>
-<div class=slidercontainer>
-macro knob 1 depth B:<input class="slider" id="0307" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0307"></span><br>
-</div>
-
-<div class=slidercontainer>
-macro knob 1 start position C:<input class="slider" id="0309" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0309"></span><br>
-</div>
-<div class=slidercontainer>
-macro knob 1 end position C:<input class="slider" id="030a" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id030a"></span><br>
-</div>
-<div class=slidercontainer>
-macro knob 1 depth C:<input class="slider" id="030b" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id030b"></span><br>
-</div>
-
-<div class=slidercontainer>
-macro knob 1 start position D:<input class="slider" id="030d" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id030d"></span><br>
-</div>
-<div class=slidercontainer>
-macro knob 1 end position D:<input class="slider" id="030e" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id030e"></span><br>
-</div>
-<div class=slidercontainer>
-macro knob 1 depth D:<input class="slider" id="030f" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id030f"></span><br>
-</div>
-
-<div class=slidercontainer>
-macro knob 2 start position A:<input class="slider" id="0311" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0311"></span><br>
-</div>
-<div class=slidercontainer>
-macro knob 2 end position A:<input class="slider" id="0312" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0312"></span><br>
-</div>
-<div class=slidercontainer>
-macro knob 2 depth A:<input class="slider" id="0313" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0313"></span><br>
-</div>
->
-<div class=slidercontainer>
-macro knob 2 start position B:<input class="slider" id="0315" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0315"></span><br>
-</div>
-<div class=slidercontainer>
-macro knob 2 end position B:<input class="slider" id="0316" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0316"></span><br>
-</div>
-<div class=slidercontainer>
-macro knob 2 depth B:<input class="slider" id="0317" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0317"></span><br>
-</div>
-
-<div class=slidercontainer>
-macro knob 2 start position C:<input class="slider" id="0319" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0319"></span><br>
-</div>
-<div class=slidercontainer>
-macro knob 2 end position C:<input class="slider" id="031a" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id031a"></span><br>
-</div>
-<div class=slidercontainer>
-macro knob 2 depth C:<input class="slider" id="031b" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id031b"></span><br>
-</div>
-
-<div class=slidercontainer>
-macro knob 2 start position D:<input class="slider" id="031d" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id031d"></span><br>
-</div>
-<div class=slidercontainer>
-macro knob 2 end position D:<input class="slider" id="031e" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id031e"></span><br>
-</div>
-<div class=slidercontainer>
-macro knob 2 depth D:<input class="slider" id="031f" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id031f"></span><br>
-</div>
-
-<div class=slidercontainer>
-macro knob 3 start position A:<input class="slider" id="0321" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0321"></span><br>
-</div>
-<div class=slidercontainer>
-macro knob 3 end position A:<input class="slider" id="0322" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0322"></span><br>
-</div>
-<div class=slidercontainer>
-macro knob 3 depth A:<input class="slider" id="0323" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0323"></span><br>
-</div>
-
-<div class=slidercontainer>
-macro knob 3 start position B:<input class="slider" id="0325" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0325"></span><br>
-</div>
-<div class=slidercontainer>
-macro knob 3 end position B:<input class="slider" id="0326" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0326"></span><br>
-</div>
-<div class=slidercontainer>
-macro knob 3 depth B:<input class="slider" id="0327" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0327"></span><br>
-</div>
-
-<div class=slidercontainer>
-macro knob 3 start position C:<input class="slider" id="0329" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0329"></span><br>
-</div>
-<div class=slidercontainer>
-macro knob 3 end position C:<input class="slider" id="032a" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id032a"></span><br>
-</div>
-<div class=slidercontainer>
-macro knob 3 depth C:<input class="slider" id="032b" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id032b"></span><br>
-</div>
-
-<div class=slidercontainer>
-macro knob 3 start position D:<input class="slider" id="032d" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id032d"></span><br>
-</div>
-<div class=slidercontainer>
-macro knob 3 end position D:<input class="slider" id="032e" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id032e"></span><br>
-</div>
-<div class=slidercontainer>
-macro knob 3 depth D:<input class="slider" id="032f" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id032f"></span><br>
-</div>
-
-<div class=slidercontainer>
-macro knob 4 start position A:<input class="slider" id="0331" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0331"></span><br>
-</div>
-<div class=slidercontainer>
-macro knob 4 end position A:<input class="slider" id="0332" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0332"></span><br>
-</div>
-<div class=slidercontainer>
-macro knob 4 depth A:<input class="slider" id="0333" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0333"></span><br>
-
-<div class=slidercontainer>
-macro knob 4 start position B:<input class="slider" id="0335" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0335"></span><br>
-</div>
-<div class=slidercontainer>
-macro knob 4 end position B:<input class="slider" id="0336" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0336"></span><br>
-</div>
-<div class=slidercontainer>
-macro knob 4 depth B:<input class="slider" id="0337" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0337"></span><br>
-</div>
-
-<div class=slidercontainer>
-macro knob 4 start position C:<input class="slider" id="0339" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0339"></span><br>
-</div>
-<div class=slidercontainer>
-macro knob 4 end position C:<input class="slider" id="033a" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id033a"></span><br>
-</div>
-<div class=slidercontainer>
-macro knob 4 depth C:<input class="slider" id="033b" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id033b"></span><br>
-</div>
-
-<div class=slidercontainer>
-macro knob 4 start position D:<input class="slider" id="033d" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id033d"></span><br>
-</div>
-<div class=slidercontainer>
-macro knob 4 end position D:<input class="slider" id="033e" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id033e"></span><br>
-</div>
-<div class=slidercontainer>
-macro knob 4 depth D:<input class="slider" id="033f" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id033f"></span><br>
-</div>
-
-<div class=slidercontainer>
-macro knob 5 start position A:<input class="slider" id="0341" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0341"></span><br>
-</div>
-<div class=slidercontainer>
-macro knob 5 end position A:<input class="slider" id="0342" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0342"></span><br>
-</div>
-<div class=slidercontainer>
-macro knob 5 depth A:<input class="slider" id="0343" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0343"></span><br>
-</div>
-
-<div class=slidercontainer>
-macro knob 5 start position B:<input class="slider" id="0345" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0345"></span><br>
-</div>
-<div class=slidercontainer>
-macro knob 5 end position B:<input class="slider" id="0346" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0346"></span><br>
-</div>
-<div class=slidercontainer>
-macro knob 5 depth B:<input class="slider" id="0347" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0347"></span><br>
-</div>
-<div class=slidercontainer>
-macro knob 5 destination C:<input class="slider" id="0348" type="range" min="0" max="70" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0348"></span><br>
-</div>
-
-<div class=slidercontainer>
-macro knob 5 end position C:<input class="slider" id="034a" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id034a"></span><br>
-</div>
-<div class=slidercontainer>
-macro knob 5 depth C:<input class="slider" id="034b" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id034b"></span><br>
-</div>
-
-<div class=slidercontainer>
-macro knob 5 start position D:<input class="slider" id="034d" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id034d"></span><br>
-</div>
-<div class=slidercontainer>
-macro knob 5 end position D:<input class="slider" id="034e" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id034e"></span><br>
-</div>
-<div class=slidercontainer>
-macro knob 5 depth D:<input class="slider" id="034f" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id034f"></span><br>
-</div>
-
-<div class=slidercontainer>
-macro knob 6 start position A:<input class="slider" id="0351" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0351"></span><br>
-</div>
-<div class=slidercontainer>
-macro knob 6 end position A:<input class="slider" id="0352" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0352"></span><br>
-</div>
-<div class=slidercontainer>
-macro knob 6 depth A:<input class="slider" id="0353" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0353"></span><br>
-</div>
-
-<div class=slidercontainer>
-macro knob 6 start position B:<input class="slider" id="0355" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0355"></span><br>
-</div>
-<div class=slidercontainer>
-macro knob 6 end position B:<input class="slider" id="0356" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0356"></span><br>
-</div>
-<div class=slidercontainer>
-macro knob 6 depth B:<input class="slider" id="0357" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0357"></span><br>
-</div>
-
-<div class=slidercontainer>
-macro knob 6 start position C:<input class="slider" id="0359" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0359"></span><br>
-</div>
-<div class=slidercontainer>
-macro knob 6 end position C:<input class="slider" id="035a" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id035a"></span><br>
-</div>
-<div class=slidercontainer>
-macro knob 6 depth C:<input class="slider" id="035b" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id035b"></span><br>
-</div>
-
-<div class=slidercontainer>
-macro knob 6 start position D:<input class="slider" id="035d" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id035d"></span><br>
-</div>
-<div class=slidercontainer>
-macro knob 6 end position D:<input class="slider" id="035e" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id035e"></span><br>
-</div>
-<div class=slidercontainer>
-macro knob 6 depth D:<input class="slider" id="035f" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id035f"></span><br>
-</div>
-
-<div class=slidercontainer>
-macro knob 7 start position A:<input class="slider" id="0361" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0361"></span><br>
-</div>
-<div class=slidercontainer>
-macro knob 7 end position A:<input class="slider" id="0362" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0362"></span><br>
-</div>
-<div class=slidercontainer>
-macro knob 7 depth A:<input class="slider" id="0363" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0363"></span><br>
-</div>
-
-<div class=slidercontainer>
-macro knob 7 start position B:<input class="slider" id="0365" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0365"></span><br>
-</div>
-<div class=slidercontainer>
-macro knob 7 end position B:<input class="slider" id="0366" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0366"></span><br>
-</div>
-<div class=slidercontainer>
-macro knob 7 depth B:<input class="slider" id="0367" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0367"></span><br>
-</div>
-
-<div class=slidercontainer>
-macro knob 7 start position C:<input class="slider" id="0369" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0369"></span><br>
-</div>
-<div class=slidercontainer>
-macro knob 7 end position C:<input class="slider" id="036a" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id036a"></span><br>
-</div>
-<div class=slidercontainer>
-macro knob 7 depth C:<input class="slider" id="036b" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id036b"></span><br>
-</div>
-
-<div class=slidercontainer>
-macro knob 7 start position D:<input class="slider" id="036d" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id036d"></span><br>
-</div>
-<div class=slidercontainer>
-macro knob 7 end position D:<input class="slider" id="036e" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id036e"></span><br>
-</div>
-<div class=slidercontainer>
-macro knob 7 depth D:<input class="slider" id="036f" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id036f"></span><br>
-</div>
-
-<div class=slidercontainer>
-macro knob 8 start position A:<input class="slider" id="0371" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0371"></span><br>
-</div>
-<div class=slidercontainer>
-macro knob 8 end position A:<input class="slider" id="0372" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0372"></span><br>
-</div>
-<div class=slidercontainer>
-macro knob 8 depth A:<input class="slider" id="0373" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0373"></span><br>
-</div>
-
-<div class=slidercontainer>
-macro knob 8 start position B:<input class="slider" id="0375" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0375"></span><br>
-</div>
-<div class=slidercontainer>
-macro knob 8 end position B:<input class="slider" id="0376" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0376"></span><br>
-</div>
-<div class=slidercontainer>
-macro knob 8 depth B:<input class="slider" id="0377" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0377"></span><br>
-</div>
-
-<div class=slidercontainer>
-macro knob 8 start position C:<input class="slider" id="0379" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0379"></span><br>
-</div>
-<div class=slidercontainer>
-macro knob 8 end position C:<input class="slider" id="037a" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id037a"></span><br>
-</div>
-<div class=slidercontainer>
-macro knob 8 depth C:<input class="slider" id="037b" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id037b"></span><br>
-</div>
-<div class=slidercontainer>
-macro knob 8 start position D:<input class="slider" id="037d" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id037d"></span><br>
-</div>
-<div class=slidercontainer>
-macro knob 8 end position D:<input class="slider" id="037e" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id037e"></span><br>
-</div>
-<div class=slidercontainer>
-macro knob 8 depth D:<input class="slider" id="037f" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id037f"></span><br>
-</div>
 
 </body></html>
 
@@ -2330,6 +2013,324 @@ const char * assign PROGMEM = R"rawliteral(
 <option value="67">mod matrix 18 depth</option>
 <option value="68">mod matrix 19 depth</option>
 <option value="69">mod matrix 20 depth</option>
+
+<div class=slidercontainer>
+macro knob 1 start position A:<input class="slider" id="0301" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0301"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 1 end position A:<input class="slider" id="0302" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0302"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 1 depth A:<input class="slider" id="0303" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0303"></span><br>
+</div>
+
+<div class=slidercontainer>
+macro knob 1 start position B:<input class="slider" id="0305" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0305"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 1 end position B:<input class="slider" id="0306" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0306"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 1 depth B:<input class="slider" id="0307" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0307"></span><br>
+</div>
+
+<div class=slidercontainer>
+macro knob 1 start position C:<input class="slider" id="0309" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0309"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 1 end position C:<input class="slider" id="030a" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id030a"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 1 depth C:<input class="slider" id="030b" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id030b"></span><br>
+</div>
+
+<div class=slidercontainer>
+macro knob 1 start position D:<input class="slider" id="030d" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id030d"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 1 end position D:<input class="slider" id="030e" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id030e"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 1 depth D:<input class="slider" id="030f" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id030f"></span><br>
+</div>
+
+<div class=slidercontainer>
+macro knob 2 start position A:<input class="slider" id="0311" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0311"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 2 end position A:<input class="slider" id="0312" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0312"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 2 depth A:<input class="slider" id="0313" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0313"></span><br>
+</div>
+>
+<div class=slidercontainer>
+macro knob 2 start position B:<input class="slider" id="0315" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0315"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 2 end position B:<input class="slider" id="0316" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0316"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 2 depth B:<input class="slider" id="0317" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0317"></span><br>
+</div>
+
+<div class=slidercontainer>
+macro knob 2 start position C:<input class="slider" id="0319" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0319"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 2 end position C:<input class="slider" id="031a" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id031a"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 2 depth C:<input class="slider" id="031b" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id031b"></span><br>
+</div>
+
+<div class=slidercontainer>
+macro knob 2 start position D:<input class="slider" id="031d" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id031d"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 2 end position D:<input class="slider" id="031e" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id031e"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 2 depth D:<input class="slider" id="031f" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id031f"></span><br>
+</div>
+
+<div class=slidercontainer>
+macro knob 3 start position A:<input class="slider" id="0321" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0321"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 3 end position A:<input class="slider" id="0322" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0322"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 3 depth A:<input class="slider" id="0323" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0323"></span><br>
+</div>
+
+<div class=slidercontainer>
+macro knob 3 start position B:<input class="slider" id="0325" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0325"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 3 end position B:<input class="slider" id="0326" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0326"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 3 depth B:<input class="slider" id="0327" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0327"></span><br>
+</div>
+
+<div class=slidercontainer>
+macro knob 3 start position C:<input class="slider" id="0329" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0329"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 3 end position C:<input class="slider" id="032a" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id032a"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 3 depth C:<input class="slider" id="032b" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id032b"></span><br>
+</div>
+
+<div class=slidercontainer>
+macro knob 3 start position D:<input class="slider" id="032d" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id032d"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 3 end position D:<input class="slider" id="032e" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id032e"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 3 depth D:<input class="slider" id="032f" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id032f"></span><br>
+</div>
+
+<div class=slidercontainer>
+macro knob 4 start position A:<input class="slider" id="0331" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0331"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 4 end position A:<input class="slider" id="0332" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0332"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 4 depth A:<input class="slider" id="0333" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0333"></span><br>
+
+<div class=slidercontainer>
+macro knob 4 start position B:<input class="slider" id="0335" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0335"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 4 end position B:<input class="slider" id="0336" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0336"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 4 depth B:<input class="slider" id="0337" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0337"></span><br>
+</div>
+
+<div class=slidercontainer>
+macro knob 4 start position C:<input class="slider" id="0339" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0339"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 4 end position C:<input class="slider" id="033a" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id033a"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 4 depth C:<input class="slider" id="033b" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id033b"></span><br>
+</div>
+
+<div class=slidercontainer>
+macro knob 4 start position D:<input class="slider" id="033d" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id033d"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 4 end position D:<input class="slider" id="033e" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id033e"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 4 depth D:<input class="slider" id="033f" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id033f"></span><br>
+</div>
+
+<div class=slidercontainer>
+macro knob 5 start position A:<input class="slider" id="0341" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0341"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 5 end position A:<input class="slider" id="0342" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0342"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 5 depth A:<input class="slider" id="0343" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0343"></span><br>
+</div>
+
+<div class=slidercontainer>
+macro knob 5 start position B:<input class="slider" id="0345" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0345"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 5 end position B:<input class="slider" id="0346" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0346"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 5 depth B:<input class="slider" id="0347" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0347"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 5 destination C:<input class="slider" id="0348" type="range" min="0" max="70" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0348"></span><br>
+</div>
+
+<div class=slidercontainer>
+macro knob 5 end position C:<input class="slider" id="034a" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id034a"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 5 depth C:<input class="slider" id="034b" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id034b"></span><br>
+</div>
+
+<div class=slidercontainer>
+macro knob 5 start position D:<input class="slider" id="034d" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id034d"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 5 end position D:<input class="slider" id="034e" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id034e"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 5 depth D:<input class="slider" id="034f" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id034f"></span><br>
+</div>
+
+<div class=slidercontainer>
+macro knob 6 start position A:<input class="slider" id="0351" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0351"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 6 end position A:<input class="slider" id="0352" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0352"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 6 depth A:<input class="slider" id="0353" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0353"></span><br>
+</div>
+
+<div class=slidercontainer>
+macro knob 6 start position B:<input class="slider" id="0355" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0355"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 6 end position B:<input class="slider" id="0356" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0356"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 6 depth B:<input class="slider" id="0357" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0357"></span><br>
+</div>
+
+<div class=slidercontainer>
+macro knob 6 start position C:<input class="slider" id="0359" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0359"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 6 end position C:<input class="slider" id="035a" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id035a"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 6 depth C:<input class="slider" id="035b" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id035b"></span><br>
+</div>
+
+<div class=slidercontainer>
+macro knob 6 start position D:<input class="slider" id="035d" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id035d"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 6 end position D:<input class="slider" id="035e" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id035e"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 6 depth D:<input class="slider" id="035f" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id035f"></span><br>
+</div>
+
+<div class=slidercontainer>
+macro knob 7 start position A:<input class="slider" id="0361" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0361"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 7 end position A:<input class="slider" id="0362" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0362"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 7 depth A:<input class="slider" id="0363" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0363"></span><br>
+</div>
+
+<div class=slidercontainer>
+macro knob 7 start position B:<input class="slider" id="0365" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0365"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 7 end position B:<input class="slider" id="0366" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0366"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 7 depth B:<input class="slider" id="0367" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0367"></span><br>
+</div>
+
+<div class=slidercontainer>
+macro knob 7 start position C:<input class="slider" id="0369" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0369"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 7 end position C:<input class="slider" id="036a" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id036a"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 7 depth C:<input class="slider" id="036b" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id036b"></span><br>
+</div>
+
+<div class=slidercontainer>
+macro knob 7 start position D:<input class="slider" id="036d" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id036d"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 7 end position D:<input class="slider" id="036e" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id036e"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 7 depth D:<input class="slider" id="036f" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id036f"></span><br>
+</div>
+
+<div class=slidercontainer>
+macro knob 8 start position A:<input class="slider" id="0371" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0371"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 8 end position A:<input class="slider" id="0372" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0372"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 8 depth A:<input class="slider" id="0373" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0373"></span><br>
+</div>
+
+<div class=slidercontainer>
+macro knob 8 start position B:<input class="slider" id="0375" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0375"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 8 end position B:<input class="slider" id="0376" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0376"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 8 depth B:<input class="slider" id="0377" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0377"></span><br>
+</div>
+
+<div class=slidercontainer>
+macro knob 8 start position C:<input class="slider" id="0379" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0379"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 8 end position C:<input class="slider" id="037a" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id037a"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 8 depth C:<input class="slider" id="037b" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id037b"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 8 start position D:<input class="slider" id="037d" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id037d"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 8 end position D:<input class="slider" id="037e" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id037e"></span><br>
+</div>
+<div class=slidercontainer>
+macro knob 8 depth D:<input class="slider" id="037f" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id037f"></span><br>
+</div>
 
 </select>
 </div>
