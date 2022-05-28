@@ -14,8 +14,8 @@
 
 #define USE_SERIAL Serial
 
-#define MY_SSID  "albaricoque"
-#define MY_PW  "platanoyfresa"
+#define MY_SSID  "YOUR SSID"
+#define MY_PW  "YOUR pASSWORD"
 
 
 IPAddress local_IP(192, 168, 1, 4); //ESP's IP
@@ -30,25 +30,28 @@ const char full_html[] PROGMEM = R"rawliteral(
   border-style: ridge;
   padding: 10px;
   border-radius: 5px;
+   margin-top: 1%; 
   }
 .slidecontainer {
   display: grid;
-  grid-auto-columns:30%;
-   
-  
-  
+  grid-auto-rows:30%;
+   margin-top: 1%; 
+ margin-bottom: 1%;
 }
 
 .slider {
   -webkit-appearance: none;
-  height: 20px;
-  background: #d3d3d3;
+  height: 10px;
+  background: Black;
   opacity: 0.7;
   -webkit-transition: .2s;
   transition: opacity .2s;
   border-style: inset;
   border-color: DarkGray;
-  margin-top: 6%; 
+ margin-top: 1%; 
+ margin-bottom: 1%;
+ border-radius: 6px;
+ 
 }
 
 .slider:hover {
@@ -66,19 +69,19 @@ const char full_html[] PROGMEM = R"rawliteral(
   border-color: DarkGray;
   -webkit-appearance: none;
   appearance: none;
-  width: 25px;
-  height: 35px;
+  width: 4px;
+  height: 16px;
   background: #00ffca;
   cursor: pointer;
-   border-radius: 3px;
+   border-radius: 6px;
 }
 
 .slider::-moz-range-thumb {
-  width: 25px;
-  height: 35px;
+  width: 4px;
+  height: 16px;
   background: #00ffca;
   cursor: pointer;
-  border-radius: 3px;
+  border-radius: 6px;
 }
 </style>
 <script>var connection = new WebSocket('ws://'+location.hostname+':81/', ['arduino']);connection.onopen = function () {  connection.send('Connect ' + new Date()); }; connection.onerror = function (error) {    console.log('WebSocket Error ', error);};connection.onmessage = function (e) {  console.log('Server: ', e.data);};
@@ -114,7 +117,7 @@ Keyboard Octave:<input class="slider" id="d" type="range" min="58" max="69" step
 osc 1 wave:<select id="13"oninput="sendcc(this.id,this.value)" ><option value="0">sine</option><option value="1">triangle</option><option value="2">sawtooth</option><option value="3">saw 9:1 PW</option><option value="4">saw 8:2 PW</option><option value="5">saw 7:3 PW</option><option value="6">saw 6:4 PW</option><option value="7">saw 5:5 PW</option><option value="8">saw 4:6 PW</option><option value="9">saw 3:7 PW</option><option value="10">saw 2:8 PW</option><option value="11">saw 1:9 PW</option><option value="12">pulse width</option><option value="13">square</option><option value="14">sine table</option><option value="15">analogue pulse</option><option value="16">analogue sync</option><option value="17">triangle saw blend</option><option value="18">digital nasty 1</option><option value="19">digital nasty 2</option><option value="20">digital saw square</option><option value="21">digital vocal 1</option><option value="22">digital vocal 2</option><option value="23">digital vocal 3</option><option value="24">digital vocal 4</option><option value="25">digital vocal 5</option><option value="26">digital vocal 6</option><option value="27">random collection 1</option><option value="28">random collection 2</option><option value="29">random collection 3</option></select></div>
 </div>
 <div class=slidercontainer>osc 1 wave interpolate:
-<input class="slider" id="20" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id13"></span><br>
+<input class="slider" id="20" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id20 "></span><br>
  </div>
 <div class=slidercontainer>
 osc 1 pulse width index:<input class="slider" id="15" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id15"></span><br>
