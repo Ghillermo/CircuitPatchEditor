@@ -14,8 +14,8 @@
 
 #define USE_SERIAL Serial
 
-#define MY_SSID  "YOUR SSID"
-#define MY_PW  "YOUR pASSWORD"
+#define MY_SSID  "SSID"
+#define MY_PW  "PASSWORD"
 
 
 IPAddress local_IP(192, 168, 1, 4); //ESP's IP
@@ -56,7 +56,7 @@ const char full_html[] PROGMEM = R"rawliteral(
 
 .slider:hover {
   opacity: 1;
-  background:#ffca00
+  background:#00ffca
 }
 .slider:checked {
   opacity: 1;
@@ -65,21 +65,23 @@ const char full_html[] PROGMEM = R"rawliteral(
 
 
 .slider::-webkit-slider-thumb {
+   border-style: outset;
   border-style: outset;
   border-color: DarkGray;
   -webkit-appearance: none;
   appearance: none;
   width: 4px;
   height: 16px;
-  background: #00ffca;
+  background: #ffca00;
   cursor: pointer;
    border-radius: 6px;
 }
 
 .slider::-moz-range-thumb {
+  border-style: outset;
   width: 4px;
   height: 16px;
-  background: #00ffca;
+  background: #ffca00;
   cursor: pointer;
   border-radius: 6px;
 }
@@ -524,42 +526,65 @@ chorus delay:<input class="slider" id="011d" type="range" min="0" max="127" step
 const char * assign PROGMEM = R"rawliteral(
 <html><head><meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
-.select {
+select {
   font-size:24px;
+  border-style: ridge;
+  padding: 10px;
+  border-radius: 5px;
+   margin-top: 1%; 
   }
 .slidecontainer {
   display: grid;
-  grid-auto-columns:30%;
+  grid-auto-rows:30%;
+   margin-top: 1%; 
+ margin-bottom: 1%;
 }
 
 .slider {
   -webkit-appearance: none;
-  width: 30%;
-  height: 40px;
-  background: #d3d3d3;
+  height: 10px;
+  background: Black;
   opacity: 0.7;
   -webkit-transition: .2s;
   transition: opacity .2s;
+  border-style: inset;
+  border-color: DarkGray;
+ margin-top: 1%; 
+ margin-bottom: 1%;
+ border-radius: 6px;
+ 
 }
 
 .slider:hover {
   opacity: 1;
+  background:#00ffca
+}
+.slider:checked {
+  opacity: 1;
+  background:#ca00ff
 }
 
+
 .slider::-webkit-slider-thumb {
+   border-style: outset;
+  border-style: outset;
+  border-color: DarkGray;
   -webkit-appearance: none;
   appearance: none;
-  width: 25px;
-  height: 35px;
-  background: #00FFC4;
+  width: 4px;
+  height: 16px;
+  background: #ffca00;
   cursor: pointer;
+   border-radius: 6px;
 }
 
 .slider::-moz-range-thumb {
-  width: 25px;
-  height: 35px;
-  background: #04AA6D;
+  border-style: outset;
+  width: 4px;
+  height: 16px;
+  background: #ffca00;
   cursor: pointer;
+  border-radius: 6px;
 }
 </style></head>
 <div class=slidercontainer><select id="Knob">
@@ -985,7 +1010,68 @@ macro knob 8 end position D:<input class="slider" id="037e" type="range" min="0"
 <div class=slidercontainer>
 macro knob 8 depth D:<input class="slider" id="037f" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id037f"></span><br>
 </div>)rawliteral";
-const char modmatrix[] PROGMEM = R"rawliteral(
+const char modmatrix[] PROGMEM = R"rawliteral(<head><style>
+.select {
+  font-size:24px;
+  border-style: ridge;
+  padding: 10px;
+  border-radius: 5px;
+   margin-top: 1%; 
+  }
+.slidecontainer {
+  display: grid;
+  grid-auto-rows:30%;
+   margin-top: 1%; 
+ margin-bottom: 1%;
+}
+
+.slider {
+  -webkit-appearance: none;
+  height: 10px;
+  background: Black;
+  opacity: 0.7;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+  border-style: inset;
+  border-color: DarkGray;
+ margin-top: 1%; 
+ margin-bottom: 1%;
+ border-radius: 6px;
+ 
+}
+
+.slider:hover {
+  opacity: 1;
+  background:#00ffca
+}
+.slider:checked {
+  opacity: 1;
+  background:#ca00ff
+}
+
+
+.slider::-webkit-slider-thumb {
+   border-style: outset;
+  border-style: outset;
+  border-color: DarkGray;
+  -webkit-appearance: none;
+  appearance: none;
+  width: 4px;
+  height: 16px;
+  background: #ffca00;
+  cursor: pointer;
+   border-radius: 6px;
+}
+
+.slider::-moz-range-thumb {
+  border-style: outset;
+  width: 4px;
+  height: 16px;
+  background: #ffca00;
+  cursor: pointer;
+  border-radius: 6px;
+}
+</style></head>
 <div class=slidercontainer>
 mod matrix 1 source 1:<select id="0153" oninput="sendNPRN(this.id,this.value);" ><option value="0">direct</option>
 <option value="1">modulation wheel</option>
