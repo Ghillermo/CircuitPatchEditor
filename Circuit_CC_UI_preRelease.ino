@@ -1,8 +1,10 @@
-/*Real time midi parameter editor example for Novation Circuit.
+/*Real time MIDI parameter editor example for Novation Circuit.
    Connect TRS jack: Tip V+, Ring Data(tx), Sleeve GND.
    Introduce your net credentials and preferred IP below.
    Then just access that IP using a browser.
    Based mostly on Websockets library examples and Circuits Programmers Reference Guide.
+   Landing page is CC and Nrpn parameters. Additional pages for macro knob and mod matrix routing in href links.
+   Experimental release. Needs testing. Questions, updates and requests in https://github.com/Ghillermo/CircuitPatchEditor
 */
 #include <Arduino.h>
 #include <WebSocketsServer.h>
@@ -14,8 +16,8 @@
 
 #define USE_SERIAL Serial
 
-#define MY_SSID  "SSID"
-#define MY_PW  "PASSWORD"
+#define MY_SSID  "Your SSID"
+#define MY_PW  "Your pass"
 
 
 IPAddress local_IP(192, 168, 1, 4); //ESP's IP
@@ -2165,7 +2167,7 @@ void handleMatrix() {
 }
 void setup() {
   /*
-  //USE_SERIAL.begin(9600);
+  
   //USE_SERIAL.flush();
   
   for (uint8_t t = 4; t > 0; t--) {
@@ -2173,7 +2175,7 @@ void setup() {
    //USE_SERIAL.flush();
     delay(1000);
   }*/
-  
+  //USE_SERIAL.begin(9600);
   MIDI.begin();
   if (!WiFi.config(local_IP, gateway, subnet)) {
     //USE_SERIAL.println("STA Failed to configure");
