@@ -16,3 +16,5 @@ Plug jack into MIDI IN, connect to http://192.168.1.4 (or the IP you've chosen).
 
 To do:
 Testing! Switches, select MIDI channel, better UI. Mixer, Master fx, drums. CV/knob input that doesn't kill wifi.
+
+Let me know if you try it or want to, what features you'd want to see next or what trouble did you have and I'll give you support. Cheers and thanks for coming.
