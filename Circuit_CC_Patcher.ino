@@ -15,8 +15,8 @@
 #include <ESP8266WiFiMulti.h>
 #include <string.h>
 
-#define MY_SSID  "yourSSID"
-#define MY_PW  "yourPass"
+#define MY_SSID  "albaricoque"
+#define MY_PW  "platanoyfresa"
 
 #define USE_SERIAL Serial
 
@@ -24,12 +24,251 @@ static int CANAL = 1; //Change this for midi channel (synth1 on ch1 and synth2 o
 
 
 
-IPAddress local_IP(192, 168, 1, 4); //ESP's IP
+IPAddress local_IP(192, 168, 1, 101); //ESP's IP
 IPAddress gateway(192, 168, 1, 1); //YOUR ROUTER's IP
 IPAddress subnet(255, 255, 255, 0);
+const char global_html[] PROGMEM = R"rawliteral(<html><head><meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body {
+  background-image: linear-gradient(to bottom right,  #101010, #606060);
+  color: powderblue;
+}
+select {
+  font-size:14px;
+  border-style: ridge;
+  padding: 2px;
+  border-radius: 5px;
+   margin-top: 1%; 
+  }
+  
+.slidercontainer{
+   margin-top: 1%; 
+ margin-bottom: 1%;
+}
 
-const char full_html[] PROGMEM = R"rawliteral(
-<html><head><meta name="viewport" content="width=device-width, initial-scale=1">
+.slider {
+  -webkit-appearance: none;
+  height: 10px;
+  background: Black;
+  opacity: 0.7;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+  border-style: inset;
+  border-color: DarkGray;
+ margin-top: 1%; 
+ margin-bottom: 1%;
+ border-radius: 6px;
+
+}
+
+.slider:hover {
+  opacity: 1;
+  background:#00ffca
+}
+.slider:checked {
+  opacity: 1;
+  background:#ca00ff
+}
+
+
+.slider::-webkit-slider-thumb {
+   border-style: outset;
+  border-style: outset;
+  border-color: DarkGray;
+  -webkit-appearance: none;
+  appearance: none;
+  width: 4px;
+  height: 16px;
+  background: #ffca00;
+  cursor: pointer;
+   border-radius: 6px;
+}
+
+.slider::-moz-range-thumb {
+  border-style: outset;
+  width: 4px;
+  height: 16px;
+  background: #ffca00;
+  cursor: pointer;
+  border-radius: 6px;
+}
+</style>
+<script>var connection = new WebSocket('ws://'+location.hostname+':81/', ['arduino']);connection.onopen = function () {  connection.send('Connect ' + new Date()); }; connection.onerror = function (error) {    console.log('WebSocket Error ', error);};connection.onmessage = function (e) {  console.log('Server: ', e.data);};
+function sendcc(cc,val) { hexV = parseInt(val).toString(16); 
+hexC = cc.toString(); 
+if(hexV.length < 2) { hexV = '0' + hexV; }  
+if(hexC.length < 2) { hexC = '0' + hexC; }  
+var command = 'G'+hexC+hexV; connection.send(command); var output = document.getElementById("id"+cc); output.innerHTML = val; }; 
+function sendNPRN(cc,val) {hexV = parseInt(val).toString(16); 
+hexC = cc.toString(); 
+if(hexV.length < 2) { hexV = '0' + hexV; }  
+while (hexC.length < 4) { hexC = '0' + hexC; }  
+var command = 'g'+hexC+hexV.toString(16); connection.send(command); var output = document.getElementById("id"+cc); output.innerHTML = val; }; 
+</script></head>
+<body>
+<div class=slidercontainer><a href="/assign">Asignar Knobs</a></div>
+<div class=slidercontainer><a href="/modmatrix">Modulation matrix</a></div>
+<div class=slidercontainer><a href="/drums">Drums</a></div>
+<div class=slidercontainer><a href="/">CC & NRPN</a></div>
+<div class=slidercontainer><a href="/global">Global</a></div>
+
+<div class=slidercontainer><h2>Reverb:</h2></div>
+<div class=slidercontainer>
+synth 1 send level:<br><input class="slider" id="58" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id58"></span><br>
+</div>
+
+<div class=slidercontainer>
+synth 2 send level:<br><input class="slider" id="59" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id59"></span><br>
+</div>
+
+<div class=slidercontainer>
+drum 1 send level:<br><input class="slider" id="5a" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id5a"></span><br>
+</div>
+
+<div class=slidercontainer>
+drum 2 send level:<br><input class="slider" id="6a" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id6a"></span><br>
+</div>
+
+<div class=slidercontainer>
+drum 3 send level:<br><input class="slider" id="6d" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id6d"></span><br>
+</div>
+
+<div class=slidercontainer>
+drum 4 send level:<br><input class="slider" id="6e" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id6e"></span><br>
+</div>
+<div class=slidercontainer>
+type:<br><input class="slider" id="0112" type="range" min="0" max="5" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0112"></span><br>
+</div>
+
+<div class=slidercontainer>
+decay:<br><input class="slider" id="0113" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0113"></span><br>
+</div>
+
+<div class=slidercontainer>
+damping:<br><input class="slider" id="0114" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0114"></span><br>
+</div>
+
+<div class=slidercontainer><h2>Delay:</h2></div>
+<div class=slidercontainer>
+synth 1 send level:<br><input class="slider" id="6f" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id6f"></span><br>
+</div>
+
+<div class=slidercontainer>
+synth 2 send level:<br><input class="slider" id="70" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id70"></span><br>
+</div>
+
+<div class=slidercontainer>
+drum 1 send level:<br><input class="slider" id="71" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id71"></span><br>
+</div>
+
+<div class=slidercontainer>
+drum 2 send level:<br><input class="slider" id="72" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id72"></span><br>
+</div>
+
+<div class=slidercontainer>
+drum 3 send level:<br><input class="slider" id="73" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id73"></span><br>
+</div>
+
+<div class=slidercontainer>
+drum 4 send level:<br><input class="slider" id="74" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id74"></span><br>
+</div>
+
+<div class=slidercontainer>
+time:<br><input class="slider" id="0106" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0106"></span><br>
+</div>
+
+<div class=slidercontainer>
+time sync:<br><input class="slider" id="0107" type="range" min="0" max="35" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0107"></span><br>
+</div>
+
+<div class=slidercontainer>
+feedback:<br><input class="slider" id="0108" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0108"></span><br>
+</div>
+
+<div class=slidercontainer>
+width:<br><input class="slider" id="0109" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0109"></span><br>
+</div>
+
+<div class=slidercontainer>
+left-right ratio:<br><input class="slider" id="010a" type="range" min="0" max="12" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id010a"></span><br>
+</div>
+
+<div class=slidercontainer>
+slew rate:<br><input class="slider" id="010b" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id010b"></span><br>
+</div>
+
+<div class=slidercontainer><h2>Filter:</h2></div>
+<div class=slidercontainer>
+frequency:<br><input class="slider" id="4a" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id4a"></span><br>
+</div>
+
+<div class=slidercontainer>
+resonance:<br><input class="slider" id="47" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id47"></span><br>
+</div>
+<div class=slidercontainer><h2>Mixer:</h2></div>
+<div class=slidercontainer>
+synth 1 level:<br><input class="slider" id="c" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="idc"></span><br>
+</div>
+
+<div class=slidercontainer>
+synth 2 level:<br><input class="slider" id="e" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="ide"></span><br>
+</div>
+
+<div class=slidercontainer>
+synth 1 pan:<br><input class="slider" id="75" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id75"></span><br>
+</div>
+
+<div class=slidercontainer>
+synth 2 pan:<br><input class="slider" id="76" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id76"></span><br>
+</div>
+<div class=slidercontainer><h2>Sidechain:</h2></div>
+<div class=slidercontainer>
+synth 1 source:<br><input class="slider" id="0237" type="range" min="0" max="4" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0237"></span><br>
+</div>
+
+<div class=slidercontainer>
+synth 1 attack:<br><input class="slider" id="0238" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0238"></span><br>
+</div>
+
+<div class=slidercontainer>
+synth 1 hold:<br><input class="slider" id="0239" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0239"></span><br>
+</div>
+
+<div class=slidercontainer>
+synth 1 decay:<br><input class="slider" id="023a" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id023a"></span><br>
+</div>
+
+<div class=slidercontainer>
+synth 1 depth:<br><input class="slider" id="023b" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id023b"></span><br>
+</div>
+
+<div class=slidercontainer>
+synth 2 source:<br><input class="slider" id="0241" type="range" min="0" max="4" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0241"></span><br>
+</div>
+
+<div class=slidercontainer>
+synth 2 attack:<br><input class="slider" id="0242" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0242"></span><br>
+</div>
+
+<div class=slidercontainer>
+synth 2 hold:<br><input class="slider" id="0243" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0243"></span><br>
+</div>
+
+<div class=slidercontainer>
+synth 2 decay:<br><input class="slider" id="0244" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0244"></span><br>
+</div>
+
+<div class=slidercontainer>
+synth 2 depth:<br><input class="slider" id="0145" type="range" min="0" max="127" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0145"></span><br>
+</div>
+
+<div class=slidercontainer>
+FX Bypass:<br><input class="slider" id="0115" type="range" min="0" max="1" step="1" oninput="sendNPRN(this.id,this.value);" ><span id="id0115"></span><br>
+</div>
+</body></html>
+)rawliteral";
+
+const char drums_html[] PROGMEM =R"rawliteral(<html><head><meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
 body {
   background-image: linear-gradient(to bottom right,  #101010, #606060);
@@ -100,17 +339,231 @@ function sendcc(cc,val) { hexV = parseInt(val).toString(16);
 hexC = cc.toString(); 
 if(hexV.length < 2) { hexV = '0' + hexV; }  
 if(hexC.length < 2) { hexC = '0' + hexC; }  
+var command = 'D'+hexC+hexV; connection.send(command); var output = document.getElementById("id"+cc); output.innerHTML = val; }; 
+</script></head>
+<body>
+<div class=slidercontainer><a href="/assign">Asignar Knobs</a></div>
+<div class=slidercontainer><a href="/modmatrix">Modulation matrix</a></div>
+<div class=slidercontainer><a href="/drums">Drums</a></div>
+<div class=slidercontainer><a href="/">CC & NRPN</a></div>
+<div class=slidercontainer><a href="/global">Global</a></div>
+<div class=slidercontainer>
+drum 1 patch select:<br><input class="slider" id="8" type="range" min="0" max="63" step="1" oninput="sendcc(this.id,this.value);" ><span id="id8"></span><br>
+</div>
+
+<div class=slidercontainer>
+drum 1 level:<br><input class="slider" id="c" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="idc"></span><br>
+</div>
+
+<div class=slidercontainer>
+drum 1 pitch:<br><input class="slider" id="e" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="ide"></span><br>
+</div>
+
+<div class=slidercontainer>
+drum 1 decay:<br><input class="slider" id="f" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="idf"></span><br>
+</div>
+
+<div class=slidercontainer>
+drum 1 distortion:<br><input class="slider" id="10" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id10"></span><br>
+</div>
+
+<div class=slidercontainer>
+drum 1 EQ:<br><input class="slider" id="11" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id11"></span><br>
+</div>
+
+<div class=slidercontainer>
+drum 1 pan:<br><input class="slider" id="4d" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id4d"></span><br>
+</div>
+
+<div class=slidercontainer>
+drum 2 patch select:<br><input class="slider" id="12" type="range" min="0" max="63" step="1" oninput="sendcc(this.id,this.value);" ><span id="id12"></span><br>
+</div>
+
+<div class=slidercontainer>
+drum 2 level:<br><input class="slider" id="17" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id17"></span><br>
+</div>
+
+<div class=slidercontainer>
+drum 2 pitch:<br><input class="slider" id="22" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id22"></span><br>
+</div>
+
+<div class=slidercontainer>
+drum 2 decay:<br><input class="slider" id="28" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id28"></span><br>
+</div>
+
+<div class=slidercontainer>
+drum 2 distortion:<br><input class="slider" id="2a" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id2a"></span><br>
+</div>
+
+<div class=slidercontainer>
+drum 2 EQ:<br><input class="slider" id="2b" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id2b"></span><br>
+</div>
+
+<div class=slidercontainer>
+drum 2 pan:<br><input class="slider" id="4e" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id4e"></span><br>
+</div>
+
+<div class=slidercontainer>
+drum 3 patch select:<br><input class="slider" id="2c" type="range" min="0" max="63" step="1" oninput="sendcc(this.id,this.value);" ><span id="id2c"></span><br>
+</div>
+
+<div class=slidercontainer>
+drum 3 level:<br><input class="slider" id="2d" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id2d"></span><br>
+</div>
+
+<div class=slidercontainer>
+drum 3 pitch:<br><input class="slider" id="2e" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id2e"></span><br>
+</div>
+
+<div class=slidercontainer>
+drum 3 decay:<br><input class="slider" id="2f" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id2f"></span><br>
+</div>
+
+<div class=slidercontainer>
+drum 3 distortion:<br><input class="slider" id="30" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id30"></span><br>
+</div>
+
+<div class=slidercontainer>
+drum 3 EQ:<br><input class="slider" id="31" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id31"></span><br>
+</div>
+
+<div class=slidercontainer>
+drum 3 pan:<br><input class="slider" id="4f" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id4f"></span><br>
+</div>
+
+<div class=slidercontainer>
+drum 4 patch select:<br><input class="slider" id="32" type="range" min="0" max="63" step="1" oninput="sendcc(this.id,this.value);" ><span id="id32"></span><br>
+</div>
+
+<div class=slidercontainer>
+drum 4 level:<br><input class="slider" id="35" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id35"></span><br>
+</div>
+
+<div class=slidercontainer>
+drum 4 pitch:<br><input class="slider" id="37" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id37"></span><br>
+</div>
+
+<div class=slidercontainer>
+drum 4 decay:<br><input class="slider" id="39" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id39"></span><br>
+</div>
+
+<div class=slidercontainer>
+drum 4 distortion:<br><input class="slider" id="3d" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id3d"></span><br>
+</div>
+
+<div class=slidercontainer>
+drum 4 EQ:<br><input class="slider" id="4c" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id4c"></span><br>
+</div>
+
+<div class=slidercontainer>
+drum 4 pan:<br><input class="slider" id="50" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id50"></span><br>
+</div>
+</body></html>
+)rawliteral";
+const char full_html[] PROGMEM = R"rawliteral(
+<html><head><meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body {
+  background-image: linear-gradient(to bottom right,  #101010, #606060);
+  color: powderblue;
+}
+select {
+  font-size:14px;
+  border-style: ridge;
+  padding: 2px;
+  border-radius: 5px;
+   margin-top: 1%; 
+  }
+.button {
+  border: none;
+  color: #808080;
+  padding: 6px 12px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 2px 1px;
+  cursor: pointer;
+    border-radius: 12px;
+      background:#caff00;
+}
+.slidercontainer{
+   margin-top: 1%; 
+ margin-bottom: 1%;
+}
+
+.slider {
+  -webkit-appearance: none;
+  height: 10px;
+  background: Black;
+  opacity: 0.7;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+  border-style: inset;
+  border-color: DarkGray;
+ margin-top: 1%; 
+ margin-bottom: 1%;
+ border-radius: 6px;
+
+}
+
+.slider:hover {
+  opacity: 1;
+  background:#00ffca
+}
+.slider:checked {
+  opacity: 1;
+  background:#ca00ff
+}
+
+
+.slider::-webkit-slider-thumb {
+   border-style: outset;
+  border-style: outset;
+  border-color: DarkGray;
+  -webkit-appearance: none;
+  appearance: none;
+  width: 4px;
+  height: 16px;
+  background: #ffca00;
+  cursor: pointer;
+   border-radius: 6px;
+}
+
+.slider::-moz-range-thumb {
+  border-style: outset;
+  width: 4px;
+  height: 16px;
+  background: #ffca00;
+  cursor: pointer;
+  border-radius: 6px;
+}
+</style>
+<script>var connection = new WebSocket('ws://'+location.hostname+':81/', ['arduino']);connection.onopen = function () {  connection.send('Connect ' + new Date()); }; connection.onerror = function (error) {    console.log('WebSocket Error ', error);};connection.onmessage = function (e) {  console.log('Server: ', e.data);};
+function sendcc(cc,val) { hexV = parseInt(val).toString(16); 
+hexC = cc.toString(); 
+if(hexV.length < 2) { hexV = '0' + hexV; }  
+if(hexC.length < 2) { hexC = '0' + hexC; }  
 var command = '#'+hexC+hexV; connection.send(command); var output = document.getElementById("id"+cc); output.innerHTML = val; }; 
 function sendNPRN(cc,val) {hexV = parseInt(val).toString(16); 
 hexC = cc.toString(); 
 if(hexV.length < 2) { hexV = '0' + hexV; }  
 while (hexC.length < 4) { hexC = '0' + hexC; }  
 var command = 'N'+hexC+hexV.toString(16); connection.send(command); var output = document.getElementById("id"+cc); output.innerHTML = val; }; 
+function canal() {
+  connection.send('C');
+  }
 </script></head>
 <body>
 <div class=slidercontainer><a href="/assign">Asignar Knobs</a></div>
 <div class=slidercontainer><a href="/modmatrix">Modulation matrix</a></div>
-<div class=slidercontainer>Polyphony Mode: <select id="3"oninput="sendcc(this.id,this.value)" ><option value="0">sine</option><option value="1">triangle</option><option value="2">sawtooth</option><option value="3">saw 9:1 PW</option><option value="4">saw 8:2 PW</option><option value="5">saw 7:3 PW</option><option value="6">saw 6:4 PW</option><option value="7">saw 5:5 PW</option><option value="8">saw 4:6 PW</option><option value="9">saw 3:7 PW</option><option value="10">saw 2:8 PW</option><option value="11">saw 1:9 PW</option><option value="12">pulse width</option><option value="13">square</option><option value="14">sine table</option><option value="15">analogue pulse</option><option value="16">analogue sync</option><option value="17">triangle saw blend</option><option value="18">digital nasty 1</option><option value="19">digital nasty 2</option><option value="20">digital saw square</option><option value="21">digital vocal 1</option><option value="22">digital vocal 2</option><option value="23">digital vocal 3</option><option value="24">digital vocal 4</option><option value="25">digital vocal 5</option><option value="26">digital vocal 6</option><option value="27">random collection 1</option><option value="28">random collection 2</option><option value="29">random collection 3</option></select></div>
+<div class=slidercontainer><a href="/drums">Drums</a></div>
+<div class=slidercontainer><a href="/">CC & NRPN</a></div> 
+<div class=slidercontainer><a href="/global">Global</a></div> 
+
+<div class=slidercontainer><input type="button" class="button" value="Channel Switch" onclick="canal();"></div> 
+
+<div class=slidercontainer>Polyphony Mode: <select id="3" oninput="sendcc(this.id,this.value)" ><option value="0">Mono</option><option value="1">Mono AG</option><option value="2">Poly</option></select></div>
 
 <div class=slidercontainer>
 Portamento Rate:<br><input class="slider" id="5" type="range" min="0" max="127" step="1" oninput="sendcc(this.id,this.value);" ><span id="id5"></span><br>
@@ -610,7 +1063,11 @@ while (hexC.length < 4) { hexC = '0' + hexC; }
 var command = 'N'+hexC+hexV.toString(16); connection.send(command); var output = document.getElementById("id"+cc); output.innerHTML = val; }; 
 </script></head>
 <body>
-<div class=slidercontainer><a href="/">Back</a></div>
+<div class=slidercontainer><a href="/assign">Asignar Knobs</a></div>
+<div class=slidercontainer><a href="/modmatrix">Modulation matrix</a></div>
+<div class=slidercontainer><a href="/drums">Drums</a></div>
+<div class=slidercontainer><a href="/">CC & NRPN</a></div> 
+<div class=slidercontainer><a href="/global">Global</a></div> 
 <div class=slidercontainer><select id="Knob">
 <option value="0300"> Knob 1 destination A:</option>
 <option value="0304"> Knob 1 destination B:</option>
@@ -1111,7 +1568,11 @@ while (hexC.length < 4) { hexC = '0' + hexC; }
 var command = 'N'+hexC+hexV.toString(16); connection.send(command); var output = document.getElementById("id"+cc); output.innerHTML = val; }; 
 </script></head>
 <body>
-<div class=slidercontainer><a href="/">Back</a></div>
+<div class=slidercontainer><a href="/assign">Asignar Knobs</a></div>
+<div class=slidercontainer><a href="/modmatrix">Modulation matrix</a></div>
+<div class=slidercontainer><a href="/drums">Drums</a></div>
+<div class=slidercontainer><a href="/">CC & NRPN</a></div> 
+<div class=slidercontainer><a href="/global">Global</a></div> 
 <div class=slidercontainer>
 mod matrix 1 source 1:<select id="0153" oninput="sendNPRN(this.id,this.value);" ><option value="0">direct</option>
  
@@ -2148,6 +2609,7 @@ void sendNRPN(int MSB, int LSB, int valor, int canal) {
   MIDI.sendControlChange( 6 , valor, canal);
 
 }
+
 void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length) {
   //Handle websocket
   switch (type) {
@@ -2164,9 +2626,16 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
       break;
     case WStype_TEXT:
       //USE_SERIAL.printf("[%u] get Text: %s\n", num, payload);
-      byte   canal = 1; //Channel, may be selectable in the future.
-
-      if (payload[0] == '#') { //Read CC payload (it's always #CCVV, where CC is 2 hex digit CC and VV is 2 hex dig value).
+      static byte canal = 1 ; //Midi channel 1=synth1, 2=synth2.
+     if (payload[0] == 'C'){
+      if (canal==1){
+          canal=2;
+        }
+      else if (canal==2){
+          canal=1;
+        }
+      }
+      else if (payload[0] == '#') { //Read CC payload (it's always #CCVV, where CC is 2 hex digit CC and VV is 2 hex dig value).
 
         uint32_t msg = (uint32_t) strtol((const char *) &payload[1], NULL, 16);
         int M3 = (msg >> 16) & 0xFF;
@@ -2178,7 +2647,19 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
         //USE_SERIAL.print(" M3 : "); //USE_SERIAL.println(M3);
         MIDI.sendControlChange(CC, val, canal);
  
-      } else if (payload[0] == 'N') { //Read NPRN payload. It's always NMMLLVV, where MM msb, LL lsb VV value
+      }else if (payload[0] == 'D'){
+        
+        uint32_t msg = (uint32_t) strtol((const char *) &payload[1], NULL, 16);
+        int M3 = (msg >> 16) & 0xFF;
+        int CC = (msg >> 8) & 0xFF;
+        int val = (msg >> 0) & 0xFF;
+        //USE_SERIAL.print("CC: "); //USE_SERIAL.print(CC);
+        //USE_SERIAL.print(" - val: "); //USE_SERIAL.print(val);
+        //USE_SERIAL.print(" - canal: "); //USE_SERIAL.print(canal);
+        //USE_SERIAL.print(" M3 : "); //USE_SERIAL.println(M3);
+        MIDI.sendControlChange(CC, val, 10); //10 is fixed channel for drums. 
+        }
+      else if (payload[0] == 'N') { //Read NPRN payload. It's always NMMLLVV, where MM msb, LL lsb VV value
         uint32_t msg = (uint32_t) strtol((const char *) &payload[1], NULL, 16);
         int MSB = (msg >> 16) & 0xFF;
         int LSB = (msg >> 8) & 0xFF;
@@ -2190,7 +2671,30 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
         //USE_SERIAL.print(" - val: "); //USE_SERIAL.print(val);
         //USE_SERIAL.print(" - canal: "); //USE_SERIAL.println(canal);
 
-      }
+      } else if (payload[0]='G'){
+          uint32_t msg = (uint32_t) strtol((const char *) &payload[1], NULL, 16);
+        int M3 = (msg >> 16) & 0xFF;
+        int CC = (msg >> 8) & 0xFF;
+        int val = (msg >> 0) & 0xFF;
+        //USE_SERIAL.print("CC: "); //USE_SERIAL.print(CC);
+        //USE_SERIAL.print(" - val: "); //USE_SERIAL.print(val);
+        //USE_SERIAL.print(" - canal: "); //USE_SERIAL.print(canal);
+        //USE_SERIAL.print(" M3 : "); //USE_SERIAL.println(M3);
+        MIDI.sendControlChange(CC, val, 16);
+        }
+        else if (payload[0]='g'){
+         uint32_t msg = (uint32_t) strtol((const char *) &payload[1], NULL, 16);
+        int MSB = (msg >> 16) & 0xFF;
+        int LSB = (msg >> 8) & 0xFF;
+        int val = (msg >> 0) & 0xFF;
+        sendNRPN(MSB, LSB, val, 16);
+
+        //USE_SERIAL.print("MSB: "); //USE_SERIAL.print(MSB);
+        //USE_SERIAL.print(" - LSB: "); //USE_SERIAL.print(LSB);
+        //USE_SERIAL.print(" - val: "); //USE_SERIAL.print(val);
+        //USE_SERIAL.print(" - canal: "); //USE_SERIAL.println(canal);
+
+        }
       break;
   }
 }
@@ -2202,6 +2706,12 @@ void handleAssign() { //Knob assign
 } 
 void handleMatrix() { //Modulation Matrix
   server.send(200, "text/html", modmatrix);
+}
+void handleDrums() { //Modulation Matrix
+  server.send(200, "text/html", drums_html);
+}
+void handleGlobal() { //Modulation Matrix
+  server.send(200, "text/html", global_html);
 }
 
 void setup() {
@@ -2221,7 +2731,9 @@ void setup() {
   server.on("/", HTTP_GET, handleRoot);
   server.on("/assign", HTTP_GET, handleAssign);
   server.on("/modmatrix", HTTP_GET, handleMatrix);
-
+  server.on("/drums", HTTP_GET, handleDrums);
+  server.on("/global", HTTP_GET, handleGlobal);
+  
   webSocket.begin();
   webSocket.onEvent(webSocketEvent);
   server.begin();
@@ -2230,7 +2742,6 @@ void setup() {
   MDNS.addService("ws", "tcp", 81);
 }
 void loop() {
-  unsigned long t = millis();
   webSocket.loop();
   server.handleClient();
 }
