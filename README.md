@@ -19,15 +19,15 @@ install dependencies libraries , open code and write your desired wifi and IP, u
 To use: 
 Plug jack into MIDI IN, connect to http://192.168.1.101 (or the IP you've chosen). Set Circuit to listen to channel one if it isn't already (press shift+sessions while turning on, make sure top left pad is lit). Touch the sliders and they'll immediately affect your synth.
 
-What's left: to do and limitations (ideas are welcome):
+>What's left: to do and limitations (ideas are welcome):
 
-The UI is nor pretty or tidy, needs some shaping. Right now it's basically an unsorted list of controls. But at least it goes smooth.
+>The UI is nor pretty or tidy, needs some shaping. Right now it's basically an unsorted list of controls. But at least it goes smooth.
 
-Analog Reads kill the wifi. "Successfully" implemented 8 CV inputs through a mux but it killed the wifi. Some pots can be added, but there's a compromise between samplerate and wifi stability. I've decided to have a second esp unit work as a "port expander" or maybe upgrade to esp32. If you want to try I can write some code but otherwise I'll just keep analogRead a different project (request code for it if interested).
+>Analog Reads kill the wifi. "Successfully" implemented 8 CV inputs through a mux but it killed the wifi. Some pots can be added, but there's a compromise between samplerate and wifi stability. I've decided to have a second esp unit work as a "port expander" or maybe upgrade to esp32. If you want to try I can write some code but otherwise I'll just keep analogRead a different project (request code for it if interested).
 
-Session control: select/queue sessionstart,stop and clock are not implemented, but they're trivial to do so ask for it if you need it.
+>Session control: select/queue sessionstart,stop and clock are not implemented, but they're trivial to do so ask for it if you need it. Possibly a "song mode" can be added.
 
-Fetch data from the Circuit/bulk upload/download/store data in the device. Those are doable things, including writing samples from an SD card. It seems harder to implement but if anyone finds use for those features I can work it out.
+>Fetch data from the Circuit/bulk upload/download/store data in the device. This means we can't read the current parameter values.  Those are doable things, including writing samples from an SD card. It seems harder to implement but if anyone finds use for those features I can work it out.
 
 I'll tackle those things in this order, but I can change priorities if someone is interested in something else. Any contribution/guidance/idea on this subjects will be thankfully welcome.
 
