@@ -1,5 +1,5 @@
 # CircuitPatchEditor
-A virtual midi CC controller for Novation Circuit running in ESP8266.
+A virtual midi CC controller for Novation Circuit and ESP8266 microcontroller with Arduino.
 The code can easily be adapted to other devices from a midi table using RegExp, let me know if you have any questions.
 
 Right now, the program allows you to edit all synth parameters in real time, even if they are normally hidden from the UI.
@@ -7,8 +7,11 @@ Right now, the program allows you to edit all synth parameters in real time, eve
 >Added synth 2, drums and global controls. Demo: https://www.reddit.com/r/novationcircuit/comments/vdcduq/comment/icjqw4u/?context=3
 
 What you can do with it:
+
 Sound design: tweak and hear any parameter in real time. Save session on your Circuit to keep the patch (won't be stored in your library, just in your current session).
+
 Noodling: response is good enough to perform and jam.
+
 Reassign macro knobs and reroute the mod matrix.
 
 This is not a library, this is just an experiment. Needs testing. If you want to use it in your project please contact me for help.
@@ -18,7 +21,15 @@ I'd love to know your opinion and ideas, it's time to unlock the features we alw
  Specially interested in hearing about desired features from the non-programmer crowd.
 
 To install: 
-install dependencies libraries , open code and write your desired wifi and IP, upload it. Connect TRS jack with the tip to 3.3V, ring to ESP tx, and sleeve to ground. Do this at your risk, use optocouplers or some other method if unsure.
+install dependencies libraries , open code and write your desired wifi and IP, upload it. Connect TRS jack like this:
+
+tip to 3.3V pin,
+
+ring to ESP tx pin, 
+
+sleeve to ground pin. 
+
+Do this at your risk, ideally use optocouplers or some other circuit isolation method.
 >If you want to skip using a router or need a more user friendly way to do this, I can implement it. Just reach me!
 
 To use: 
