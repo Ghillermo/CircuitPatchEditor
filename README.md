@@ -16,9 +16,9 @@ Reassign macro knobs and reroute the mod matrix.
 
 This is not a library, this is just an experiment. Needs testing. If you want to use it in your project please contact me for help.
 
-I'd love to know your opinion and ideas, it's time to unlock the features we always wanted for the device. Contact me and pull requests!
- I'm doing this for fun and I'll listen to everybody, even if you don't know programming you could still have good ideas.
- Specially interested in hearing about desired features from the non-programmer crowd.
+>I'd love to know your opinion and ideas, it's time to unlock the features we always wanted for the device. Contact me and pull requests!
+>I'm doing this for fun and I'll listen to everybody, even if you don't know programming you could still have good ideas.
+>Specially interested in hearing about desired features from the non-programmer crowd.
 
 To install: 
 install dependencies libraries , open code and write your desired wifi and IP, upload it. Connect TRS jack like this:
