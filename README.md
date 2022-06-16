@@ -6,6 +6,11 @@ Right now, the program allows you to edit all synth parameters in real time, eve
 >Added functional prototype menus for macro knob edit/modulation Matrix.
 >Added synth 2, drums and global controls. Demo: https://www.reddit.com/r/novationcircuit/comments/vdcduq/comment/icjqw4u/?context=3
 
+What you can do with it:
+Sound design: tweak and hear any parameter in real time. Save session on your Circuit to keep the patch (won't be stored in your library, just in your current session).
+Noodling: response is good enough to perform and jam.
+Reassign macro knobs and reroute the mod matrix.
+
 This is not a library, this is just an experiment. Needs testing. If you want to use it in your project please contact me for help.
 
 I'd love to know your opinion and ideas, it's time to unlock the features we always wanted for the device. Contact me and pull requests!
@@ -24,7 +29,6 @@ Plug jack into MIDI IN, connect to http://192.168.1.101 (or the IP you've chosen
 >The UI is nor pretty or tidy, needs some shaping. Right now it's basically an unsorted list of controls. But at least it goes smooth.
 
 >Analog Reads kill the wifi. "Successfully" implemented 8 CV inputs through a mux but it killed the wifi. Some pots can be added, but there's a compromise between samplerate and wifi stability. I've decided to have a second esp unit work as a "port expander" or maybe upgrade to esp32. If you want to try I can write some code but otherwise I'll just keep analogRead a different project (request code for it if interested).
-
 >Session control: select/queue sessionstart,stop and clock are not implemented, but they're trivial to do so ask for it if you need it. Possibly a "song mode" can be added.
 
 >Fetch data from the Circuit/bulk upload/download/store data in the device. This means we can't read the current parameter values.  Those are doable things, including writing samples from an SD card. It seems harder to implement but if anyone finds use for those features I can work it out.
