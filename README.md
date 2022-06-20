@@ -42,7 +42,7 @@ Plug jack into MIDI IN, connect to http://192.168.1.101 (or the IP you've chosen
 >Analog Reads kill the wifi. "Successfully" implemented 8 CV inputs through a mux but it killed the wifi. Some pots can be added, but there's a compromise between samplerate and wifi stability. I've decided to have a second esp unit work as a "port expander" or maybe upgrade to esp32. If you want to try I can write some code but otherwise I'll just keep analogRead a different project (request code for it if interested).
 >Session control: select/queue sessionstart,stop and clock are not implemented, but they're trivial to do so ask for it if you need it. Possibly a "song mode" can be added.
 
->Fetch data from the Circuit/bulk upload/download/store data in the device. This means we can't read the current parameter values.  Those are doable things, including writing samples from an SD card. It seems harder to implement but if anyone finds use for those features I can work it out.
+>Fetch data from the Circuit/bulk upload/download/store data in the device. This means we can't read the current parameter values.  Some of those are doable, but the circuitd data output doesn't come through the midi port by design and can't be changed. It may require workarounds and guessing. It seems harder to implement but if anyone finds use for those features I can work it out.
 
 I'll tackle those things in this order, but I can change priorities if someone is interested in something else. Any contribution/guidance/idea on this subjects will be thankfully welcome.
 
